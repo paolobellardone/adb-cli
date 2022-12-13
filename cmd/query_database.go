@@ -22,6 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+	"strconv"
+
 	json "github.com/nwidger/jsoncolor"
 
 	"github.com/oracle/oci-go-sdk/v65/common"
@@ -61,8 +64,37 @@ var query_databaseCmd = &cobra.Command{
 			return
 		}
 
-		s, _ := json.MarshalIndent(adbInstance, "", "\t")
-		utils.Print(string(s))
+		if full, _ := cmd.Flags().GetBool("full"); full {
+			s, _ := json.MarshalIndent(adbInstance, "", "\t")
+			utils.Print(string(s))
+		} else {
+			fmt.Print("Database name               : ")
+			utils.PrintInfo(*adbInstance.DbName)
+			fmt.Print("Display name                : ")
+			utils.PrintInfo(*adbInstance.DisplayName)
+			fmt.Print("Databasse version           : ")
+			utils.PrintInfo(*adbInstance.DbVersion)
+			fmt.Print("Preview version             : ")
+			utils.PrintInfo(strconv.FormatBool(*adbInstance.IsPreview))
+			fmt.Print("OCPUs                       : ")
+			utils.PrintInfo(strconv.Itoa(*adbInstance.CpuCoreCount))
+			fmt.Print("Storage (GB)                : ")
+			utils.PrintInfo(strconv.Itoa(*adbInstance.DataStorageSizeInGBs))
+			fmt.Print("Workload type               : ")
+			utils.PrintInfo(string(adbInstance.DbWorkload))
+			if *adbInstance.IsFreeTier {
+				fmt.Print("Free tier                   : ")
+				utils.PrintInfo(strconv.FormatBool(*adbInstance.IsFreeTier))
+			} else {
+				fmt.Print("License model               : ")
+				utils.PrintInfo(string(adbInstance.LicenseModel))
+			}
+			fmt.Print("OCPU auto-scaling enabled   : ")
+			utils.PrintInfo(strconv.FormatBool(*adbInstance.IsAutoScalingEnabled))
+			fmt.Print("Storage auto-scaling enabled: ")
+			utils.PrintInfo(strconv.FormatBool(*adbInstance.IsAutoScalingForStorageEnabled))
+			// TODO: print only the details needed to create or update an ADB, add other details??? (Data Guard???)
+		}
 	},
 }
 
@@ -72,4 +104,5 @@ func init() {
 	query_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to inspect (required)")
 	query_databaseCmd.MarkFlagRequired("name")
 	// TODO: add the flags to print all the info or only the essential - use global verbosity flag???
+	query_databaseCmd.Flags().BoolP("full", "f", false, "print all the attributes of the Autonomous Database")
 }

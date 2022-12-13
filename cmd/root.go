@@ -36,7 +36,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const cliVersion string = "0.0.4"
+const cliVersion string = "0.0.5"
 
 type ociConfigT struct {
 	user     string
@@ -112,8 +112,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "adb-cli.yaml", "define the config file to use")
 	rootCmd.PersistentFlags().StringVarP(&cfgFileProfile, "profile", "p", "DEFAULT", "define the profile to use")
 	rootCmd.PersistentFlags().BoolVar(&utils.NoColor, "no-color", false, "disable color output")
-	// TODO: cambiare nella versione finale
-	rootCmd.PersistentFlags().BoolVar(&utils.Verbose, "verbose", true, "increase verbosity")
+	// TODO: change the default before releasing
+	rootCmd.PersistentFlags().BoolVar(&utils.Verbose, "verbose", false, "increase verbosity")
 
 	rootCmd.Flags().Bool("generate-docs", false, "generate docs in Markdown format")
 }
@@ -145,6 +145,7 @@ func initConfig() {
 
 		utils.PrintInfo("Using config file: " + viper.ConfigFileUsed())
 		utils.PrintInfo("Using profile    : " + cfgFileProfile)
+		utils.Print("")
 
 		// If there is no DEFAULT profile, print error and exit
 		if !viper.GetViper().InConfig("DEFAULT") {
