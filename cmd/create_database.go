@@ -41,9 +41,7 @@ var create_databaseCmd = &cobra.Command{
 		utils.PrintVerbose("create database command called")
 		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
 
-		// Aggiungere chiamate per scaricare il wallet e per stampare tutti i link di accesso al database
-		//func (DatabaseClient) GenerateAutonomousDatabaseWallet
-		//
+		// TODO: print the connection URL for the database and/or the connection strings???
 
 		var adbName, _ = cmd.Flags().GetString("name")
 		if len(adbName) > 14 {
@@ -56,7 +54,7 @@ var create_databaseCmd = &cobra.Command{
 		var adbType, isFree = utils.DecodeADBTypeForCreate(database_type)
 		var enableOCPUAutoscaling bool
 		var enableStorageAutoscaling bool
-		var license_model database.CreateAutonomousDatabaseBaseLicenseModelEnum //database.CreateAutonomousDatabaseBaseLicenseModelEnum
+		var license_model database.CreateAutonomousDatabaseBaseLicenseModelEnum
 		if !isFree {
 			_tmp, _ := cmd.Flags().GetString("license-model")
 			license_model = utils.DecodeLicenseModelForCreate(_tmp)
@@ -91,7 +89,7 @@ var create_databaseCmd = &cobra.Command{
 			LicenseModel:                   license_model,
 			// TODO: Add other parameters?
 		}
-		// Stampare se verbose la configurazione del DB da creare oppure stamparla una volta creato?
+		// TODO: print the configured options before and/or after the creation of the ADB???
 		s, _ := json.MarshalIndent(createADBDetails, "", "\t")
 		utils.Print(string(s))
 

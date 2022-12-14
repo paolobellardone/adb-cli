@@ -57,6 +57,11 @@ func PrintBold(msg string) {
 	b.Println(msg)
 }
 
+func PrintKV(key string, value string) {
+	fmt.Print(key)
+	PrintInfo(value)
+}
+
 func printMessage(msg string, level string) {
 
 	if NoColor {

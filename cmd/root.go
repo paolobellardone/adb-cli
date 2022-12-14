@@ -42,16 +42,14 @@ type ociConfigT struct {
 	user     string
 	key_file string
 	// TODO: encode also the keypair pass-phrase???
-	pass_phrase    string
-	fingerprint    string
-	tenancy        string
-	region         string
-	compartment_id string
-	auth_token     string
-	//database_type         string
+	pass_phrase        string
+	fingerprint        string
+	tenancy            string
+	region             string
+	compartment_id     string
+	auth_token         string
 	database_user_name string
 	database_password  string
-	//database_license_type string
 	//data_path             string
 	//database_collections  string
 	//database_tables       string
@@ -111,8 +109,8 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "adb-cli.yaml", "define the config file to use")
 	rootCmd.PersistentFlags().StringVarP(&cfgFileProfile, "profile", "p", "DEFAULT", "define the profile to use")
+	// TODO: disable color output by default if on Windows???
 	rootCmd.PersistentFlags().BoolVar(&utils.NoColor, "no-color", false, "disable color output")
-	// TODO: change the default before releasing
 	rootCmd.PersistentFlags().BoolVar(&utils.Verbose, "verbose", false, "increase verbosity")
 
 	rootCmd.Flags().Bool("generate-docs", false, "generate docs in Markdown format")
@@ -163,7 +161,6 @@ func initConfig() {
 		ociConfig.region = viper.GetViper().GetString(cfgFileProfile + ".region")
 		ociConfig.compartment_id = viper.GetViper().GetString(cfgFileProfile + ".compartment_id")
 		ociConfig.auth_token = viper.GetViper().GetString(cfgFileProfile + ".auth_token")
-		//ociConfig.database_type = viper.GetViper().GetString(cfgFileProfile + ".database_type")
 		ociConfig.database_user_name = viper.GetViper().GetString(cfgFileProfile + ".database_user_name")
 		ociConfig.database_password = viper.GetViper().GetString(cfgFileProfile + ".database_password")
 		if ociConfig.database_password != "" {
@@ -178,7 +175,6 @@ func initConfig() {
 			}
 
 		}
-		//ociConfig.database_license_type = viper.GetViper().GetString(cfgFileProfile + ".database_license_type")
 
 		key_file, _ := homedir.Expand(viper.GetViper().GetString(cfgFileProfile + ".key_file"))
 		key, err := os.ReadFile(key_file)

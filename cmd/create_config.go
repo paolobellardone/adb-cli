@@ -79,6 +79,7 @@ default:
   key_file: <full path to SSH private key file>
 
   # Uncomment in the case your SSH private key needs a pass phrase.
+  # The adb-cli generated keys does not need it.
   # pass_phrase: <pass phrase to use with your SSH private key>
 
   # Fingerprint for the SSH *public* key that was added to the user mentioned above. To get the value, see:
@@ -101,17 +102,6 @@ default:
   # https://docs.cloud.oracle.com/en-us/iaas/Content/Registry/Tasks/registrygettingauthtoken.htm?Highlight=user%20auth%20tokens
   auth_token: <authentication token>
 
-  # Autonomous Database Types:
-  # - atpfree : Always Free Autonomous Transaction Processing (default)
-  # - ajdfree : Always Free Autonomous JSON Database
-  # - apexfree: Always Free Autonomous Application Express
-  # - adwfree : Always Free Autonomous Data Warehouse
-  # - atp     : Autonomous Transaction Processing
-  # - ajd     : Autonomous JSON Database
-  # - apex    : Autonomous Application Express
-  # - adw     : Autonomous Data Warehouse
-  # database_type: atpfree
-
   # Uncomment to specify another database user name than adb (default)
   # database_user_name: <your database user name>
 
@@ -122,9 +112,6 @@ default:
   # - contains 1 lower case char
   # - contains 1 upper case char
   database_password: <database password>
-
-  # Uncomment to ask for Bring Your Own Licenses model (doesn't work for Always Free)
-  # database_license_type: byol
 
   # Path to a folder where data to load into collections can be found (default to current directory)
   data_path: .
@@ -179,11 +166,9 @@ func init() {
 	createCmd.AddCommand(create_configCmd)
 
 	create_configCmd.Flags().BoolP("with-keys", "k", false, "create key pair to be used with this configuration")
-	// TODO: do we need to manage the passphrase for the keys?
 }
 
 // create_keypair: creates a key pair that can be used in OCI to sign the API calls
-// TODO: do we need to manage the passphrase for the keys?
 func create_keypair() (private_key_path string, public_key_fingerprint string, err error) {
 	// generate key
 	privatekey, err := rsa.GenerateKey(rand.Reader, 2048)

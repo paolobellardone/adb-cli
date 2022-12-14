@@ -22,7 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
 	"strconv"
 
 	json "github.com/nwidger/jsoncolor"
@@ -68,32 +67,28 @@ var query_databaseCmd = &cobra.Command{
 			s, _ := json.MarshalIndent(adbInstance, "", "\t")
 			utils.Print(string(s))
 		} else {
-			fmt.Print("Database name               : ")
-			utils.PrintInfo(*adbInstance.DbName)
-			fmt.Print("Display name                : ")
-			utils.PrintInfo(*adbInstance.DisplayName)
-			fmt.Print("Databasse version           : ")
-			utils.PrintInfo(*adbInstance.DbVersion)
-			fmt.Print("Preview version             : ")
-			utils.PrintInfo(strconv.FormatBool(*adbInstance.IsPreview))
-			fmt.Print("OCPUs                       : ")
-			utils.PrintInfo(strconv.Itoa(*adbInstance.CpuCoreCount))
-			fmt.Print("Storage (GB)                : ")
-			utils.PrintInfo(strconv.Itoa(*adbInstance.DataStorageSizeInGBs))
-			fmt.Print("Workload type               : ")
-			utils.PrintInfo(string(adbInstance.DbWorkload))
+			utils.PrintKV("Database status             : ", string(adbInstance.LifecycleState))
+			utils.PrintKV("Database name               : ", *adbInstance.DbName)
+			utils.PrintKV("Display name                : ", *adbInstance.DisplayName)
+			utils.PrintKV("Database version            : ", *adbInstance.DbVersion)
+			utils.PrintKV("Preview version             : ", strconv.FormatBool(*adbInstance.IsPreview))
+			utils.PrintKV("OCPUs                       : ", strconv.Itoa(*adbInstance.CpuCoreCount))
+			utils.PrintKV("Storage (GB)                : ", strconv.Itoa(*adbInstance.DataStorageSizeInGBs))
+			utils.PrintKV("Workload type               : ", string(adbInstance.DbWorkload))
 			if *adbInstance.IsFreeTier {
-				fmt.Print("Free tier                   : ")
-				utils.PrintInfo(strconv.FormatBool(*adbInstance.IsFreeTier))
+				utils.PrintKV("Free tier                   : ", strconv.FormatBool(*adbInstance.IsFreeTier))
 			} else {
-				fmt.Print("License model               : ")
-				utils.PrintInfo(string(adbInstance.LicenseModel))
+				utils.PrintKV("License model               : ", string(adbInstance.LicenseModel))
 			}
-			fmt.Print("OCPU auto-scaling enabled   : ")
-			utils.PrintInfo(strconv.FormatBool(*adbInstance.IsAutoScalingEnabled))
-			fmt.Print("Storage auto-scaling enabled: ")
-			utils.PrintInfo(strconv.FormatBool(*adbInstance.IsAutoScalingForStorageEnabled))
+			utils.PrintKV("OCPU auto-scaling enabled   : ", strconv.FormatBool(*adbInstance.IsAutoScalingEnabled))
+			utils.PrintKV("Storage auto-scaling enabled: ", strconv.FormatBool(*adbInstance.IsAutoScalingForStorageEnabled))
+			utils.Print("--------------")
 			// TODO: print only the details needed to create or update an ADB, add other details??? (Data Guard???)
+			utils.PrintInfo("Connections URLs")
+			utils.PrintKV("Database Actions            : ", *adbInstance.ConnectionUrls.SqlDevWebUrl)
+			// The following two are not needed anymore because all is available in Database Actions
+			//utils.PrintKV("Oracle Application Express  : ", *adbInstance.ConnectionUrls.ApexUrl)
+			//utils.PrintKV("Oracle Graph Studio         : ", *adbInstance.ConnectionUrls.GraphStudioUrl)
 		}
 	},
 }
@@ -103,6 +98,5 @@ func init() {
 
 	query_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to inspect (required)")
 	query_databaseCmd.MarkFlagRequired("name")
-	// TODO: add the flags to print all the info or only the essential - use global verbosity flag???
 	query_databaseCmd.Flags().BoolP("full", "f", false, "print all the attributes of the Autonomous Database")
 }
