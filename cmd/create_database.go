@@ -22,6 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"context"
+	"time"
+
 	json "github.com/nwidger/jsoncolor"
 
 	"github.com/oracle/oci-go-sdk/v65/common"
@@ -68,13 +71,13 @@ var create_databaseCmd = &cobra.Command{
 			ocpus = 1
 			storage = 1
 		}
-		/*
-			dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
-			if err != nil {
-				utils.PrintError("Error: " + err.Error())
-				return
-			}
-		*/
+
+		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
+		if err != nil {
+			utils.PrintError("Error: " + err.Error())
+			return
+		}
+
 		createADBDetails := database.CreateAutonomousDatabaseDetails{
 			CompartmentId:                  &ociConfig.compartment_id,
 			DbName:                         common.String(adbName),
@@ -93,55 +96,55 @@ var create_databaseCmd = &cobra.Command{
 		s, _ := json.MarshalIndent(createADBDetails, "", "\t")
 		utils.Print(string(s))
 
-		/*
-			createADBResponse, err := dbClient.CreateAutonomousDatabase(
-				context.Background(),
-				database.CreateAutonomousDatabaseRequest{
-					CreateAutonomousDatabaseDetails: createADBDetails,
-				})
-			if err != nil {
-				utils.PrintError("Error: " + err.Error())
-				return
-			}
+		// TODO: ask confirmation before proceeding??? Maybe not needed...
 
-			utils.PrintInfo("The Autonomous Database " + *createADBResponse.AutonomousDatabase.DbName + " status is currently: " + string(createADBResponse.AutonomousDatabase.LifecycleState))
-			if createADBResponse.AutonomousDatabase.LifecycleState == database.AutonomousDatabaseLifecycleStateProvisioning {
-				utils.PrintVerbose("Provisioning autonomous database " + adbName + ", please wait...")
+		createADBResponse, err := dbClient.CreateAutonomousDatabase(
+			context.Background(),
+			database.CreateAutonomousDatabaseRequest{
+				CreateAutonomousDatabaseDetails: createADBDetails,
+			})
+		if err != nil {
+			utils.PrintError("Error: " + err.Error())
+			return
+		}
 
-				databaseProvisioning := true
-				databaseStatus := createADBResponse.AutonomousDatabase.LifecycleState
+		utils.PrintInfo("The Autonomous Database " + *createADBResponse.AutonomousDatabase.DbName + " status is currently: " + string(createADBResponse.AutonomousDatabase.LifecycleState))
+		if createADBResponse.AutonomousDatabase.LifecycleState == database.AutonomousDatabaseLifecycleStateProvisioning {
+			utils.PrintVerbose("Provisioning autonomous database " + adbName + ", please wait...")
 
-				for databaseProvisioning {
-					adbInstance, err := utils.GetAutonomousDatabase(dbClient, *createADBResponse.AutonomousDatabase.Id)
-					if err != nil {
-						utils.PrintError("Error: " + err.Error())
-						return
-					}
+			databaseProvisioning := true
+			databaseStatus := createADBResponse.AutonomousDatabase.LifecycleState
 
-					if adbInstance.LifecycleState == database.AutonomousDatabaseLifecycleStateAvailable {
-						databaseProvisioning = false
-						databaseStatus = adbInstance.LifecycleState
-					} else {
-						time.Sleep(15 * time.Second)
-					}
+			for databaseProvisioning {
+				adbInstance, err := utils.GetAutonomousDatabase(dbClient, *createADBResponse.AutonomousDatabase.Id)
+				if err != nil {
+					utils.PrintError("Error: " + err.Error())
+					return
 				}
 
-				utils.PrintInfo("The Autonomous Database " + *createADBResponse.AutonomousDatabase.DbName + " was provisioned. The current status is: " + string(databaseStatus))
-			} else {
-				utils.PrintError("Error during creation of the Autonomous Database " + adbName + ". Please check the OCI console for errors...")
-				return
+				if adbInstance.LifecycleState == database.AutonomousDatabaseLifecycleStateAvailable {
+					databaseProvisioning = false
+					databaseStatus = adbInstance.LifecycleState
+				} else {
+					time.Sleep(15 * time.Second)
+				}
 			}
 
-			// The default password for wallet is the same of the ADMIN user
-			walletName, err := utils.CreateAutonomousDatabaseWallet(dbClient, adbName, *createADBResponse.AutonomousDatabase.Id, ociConfig.database_password)
-			if err != nil {
-				utils.PrintError("Error: " + err.Error())
-				return
-			} else {
-				utils.PrintInfo("The wallet " + walletName + " for Autonomous Database " + adbName + " was successfully created.")
-				utils.PrintInfo("The password for the wallet is the same of ADMIN user.")
-			}
-		*/
+			utils.PrintInfo("The Autonomous Database " + *createADBResponse.AutonomousDatabase.DbName + " was provisioned. The current status is: " + string(databaseStatus))
+		} else {
+			utils.PrintError("Error during creation of the Autonomous Database " + adbName + ". Please check the OCI console for errors...")
+			return
+		}
+
+		// The default password for wallet is the same of the ADMIN user
+		walletName, err := utils.CreateAutonomousDatabaseWallet(dbClient, adbName, *createADBResponse.AutonomousDatabase.Id, ociConfig.database_password)
+		if err != nil {
+			utils.PrintError("Error: " + err.Error())
+			return
+		} else {
+			utils.PrintInfo("The wallet " + walletName + " for Autonomous Database " + adbName + " was successfully created.")
+			utils.PrintInfo("The password for the wallet is the same of ADMIN user.")
+		}
 	},
 }
 

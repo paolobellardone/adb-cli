@@ -22,6 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"context"
+	"time"
+
 	json "github.com/nwidger/jsoncolor"
 
 	"github.com/oracle/oci-go-sdk/v65/common"
@@ -66,13 +69,13 @@ var update_databaseCmd = &cobra.Command{
 			ocpus = 1
 			storage = 1
 		}
-		/*
-			dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
-			if err != nil {
-				utils.PrintError("Error: " + err.Error())
-				return
-			}
-		*/
+
+		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
+		if err != nil {
+			utils.PrintError("Error: " + err.Error())
+			return
+		}
+
 		updateADBDetails := database.UpdateAutonomousDatabaseDetails{
 			DbName:                         common.String(adbName),
 			CpuCoreCount:                   common.Int(ocpus),
@@ -91,6 +94,43 @@ var update_databaseCmd = &cobra.Command{
 		s, _ := json.MarshalIndent(updateADBDetails, "", "\t")
 		utils.Print(string(s))
 
+		updateADBResponse, err := dbClient.UpdateAutonomousDatabase(
+			context.Background(),
+			database.UpdateAutonomousDatabaseRequest{
+				UpdateAutonomousDatabaseDetails: updateADBDetails,
+			})
+		if err != nil {
+			utils.PrintError("Error: " + err.Error())
+			return
+		}
+
+		utils.PrintInfo("The Autonomous Database " + *updateADBResponse.AutonomousDatabase.DbName + " status is currently: " + string(updateADBResponse.AutonomousDatabase.LifecycleState))
+		if updateADBResponse.AutonomousDatabase.LifecycleState == database.AutonomousDatabaseLifecycleStateUpdating {
+			utils.PrintVerbose("Updating autonomous database " + adbName + ", please wait...")
+
+			databaseUpdating := true
+			databaseStatus := updateADBResponse.AutonomousDatabase.LifecycleState
+
+			for databaseUpdating {
+				adbInstance, err := utils.GetAutonomousDatabase(dbClient, *updateADBResponse.AutonomousDatabase.Id)
+				if err != nil {
+					utils.PrintError("Error: " + err.Error())
+					return
+				}
+
+				if adbInstance.LifecycleState == database.AutonomousDatabaseLifecycleStateAvailable {
+					databaseUpdating = false
+					databaseStatus = adbInstance.LifecycleState
+				} else {
+					time.Sleep(15 * time.Second)
+				}
+			}
+
+			utils.PrintInfo("The Autonomous Database " + *updateADBResponse.AutonomousDatabase.DbName + " was updated. The current status is: " + string(databaseStatus))
+		} else {
+			utils.PrintError("Error during updating of the Autonomous Database " + adbName + ". Please check the OCI console for errors...")
+			return
+		}
 	},
 }
 
@@ -106,71 +146,3 @@ func init() {
 	update_databaseCmd.Flags().Bool("enable-storage-autoscaling", false, "enable autoscaling for storage (max 3x the size of reserved storage)")
 	update_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byol - not used for Free Tier")
 }
-
-/*
-
-func ExampleUpdateAdb() {
-	c, clerr := database.NewDatabaseClientWithConfigurationProvider(common.DefaultConfigProvider())
-	helpers.FatalIfError(clerr)
-
-	updateDbDetails := database.UpdateAutonomousDatabaseDetails{
-		CpuCoreCount:         common.Int(2),
-		DataStorageSizeInTBs: common.Int(2),
-		IsAutoScalingEnabled: common.Bool(false),
-	}
-
-	updateReq := database.UpdateAutonomousDatabaseRequest{
-		AutonomousDatabaseId:            common.String("replacewithvalidocid"),
-		UpdateAutonomousDatabaseDetails: updateDbDetails,
-	}
-	_, err := c.UpdateAutonomousDatabase(context.Background(), updateReq)
-	helpers.FatalIfError(err)
-
-	fmt.Println("update adb successful")
-
-	// Output:
-	// update adb successful
-}
-
-func ExampleUpdateAdbAcl() {
-	c, clerr := database.NewDatabaseClientWithConfigurationProvider(common.DefaultConfigProvider())
-	helpers.FatalIfError(clerr)
-
-	updateDbDetails := database.UpdateAutonomousDatabaseDetails{
-		WhitelistedIps: []string{"1.1.1.1/28", "3.3.3.3"},
-	}
-
-	updateReq := database.UpdateAutonomousDatabaseRequest{
-		AutonomousDatabaseId:            common.String("replacewithvalidocid"),
-		UpdateAutonomousDatabaseDetails: updateDbDetails,
-	}
-	_, err := c.UpdateAutonomousDatabase(context.Background(), updateReq)
-	helpers.FatalIfError(err)
-
-	fmt.Println("update adb acl successful")
-
-	// Output:
-	// update adb acl successful
-}
-
-func ExampleUpdateAdbLisenceType() {
-	c, clerr := database.NewDatabaseClientWithConfigurationProvider(common.DefaultConfigProvider())
-	helpers.FatalIfError(clerr)
-
-	updateDbDetails := database.UpdateAutonomousDatabaseDetails{
-		LicenseModel: database.UpdateAutonomousDatabaseDetailsLicenseModelLicenseIncluded,
-	}
-
-	updateReq := database.UpdateAutonomousDatabaseRequest{
-		AutonomousDatabaseId:            common.String("replacewithvalidocid"),
-		UpdateAutonomousDatabaseDetails: updateDbDetails,
-	}
-	_, err := c.UpdateAutonomousDatabase(context.Background(), updateReq)
-	helpers.FatalIfError(err)
-
-	fmt.Println("update adb license type successful")
-
-	// Output:
-	// update adb license type successful
-}
-*/
