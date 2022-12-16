@@ -39,9 +39,8 @@ import (
 const cliVersion string = "0.0.5"
 
 type ociConfigT struct {
-	user     string
-	key_file string
-	// TODO: encode also the keypair pass-phrase???
+	user               string
+	key_file           string
 	pass_phrase        string
 	fingerprint        string
 	tenancy            string
@@ -109,8 +108,12 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "adb-cli.yaml", "define the config file to use")
 	rootCmd.PersistentFlags().StringVarP(&cfgFileProfile, "profile", "p", "DEFAULT", "define the profile to use")
-	// TODO: disable color output by default if on Windows???
-	rootCmd.PersistentFlags().BoolVar(&utils.NoColor, "no-color", false, "disable color output")
+	if runtime.GOOS == "windows" {
+		// Disable the colours in the console for Windows OS family
+		rootCmd.PersistentFlags().BoolVar(&utils.NoColor, "no-color", true, "disable color output")
+	} else {
+		rootCmd.PersistentFlags().BoolVar(&utils.NoColor, "no-color", false, "disable color output")
+	}
 	rootCmd.PersistentFlags().BoolVar(&utils.Verbose, "verbose", false, "increase verbosity")
 
 	rootCmd.Flags().Bool("generate-docs", false, "generate docs in Markdown format")
