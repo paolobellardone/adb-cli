@@ -38,6 +38,7 @@ var delete_configCmd = &cobra.Command{
 		utils.PrintVerbose("delete config command called")
 		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
 
+		utils.PrintInfo("Feature not ompleleted yet!")
 		// TODO: implement the feature
 		// TODO: delete the config file or the config template?
 	},
