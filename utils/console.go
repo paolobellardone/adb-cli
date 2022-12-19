@@ -63,7 +63,6 @@ func PrintKV(key string, value string) {
 }
 
 func printMessage(msg string, level string) {
-
 	if NoColor {
 		color.NoColor = true
 	}
@@ -80,5 +79,4 @@ func printMessage(msg string, level string) {
 	default:
 		fmt.Println(msg)
 	}
-
 }

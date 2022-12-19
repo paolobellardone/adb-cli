@@ -90,7 +90,7 @@ var update_databaseCmd = &cobra.Command{
 			// TODO: Add other parameters?
 		}
 
-		// Stampare se verbose la configurazione del DB da creare oppure stamparla una volta creato?
+		// TODO: print the configured options before and/or after the update of the ADB???
 		s, _ := json.MarshalIndent(updateADBDetails, "", "\t")
 		utils.Print(string(s))
 

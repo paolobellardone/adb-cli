@@ -25,7 +25,7 @@ import (
 	"context"
 	"time"
 
-	json "github.com/nwidger/jsoncolor"
+	//json "github.com/nwidger/jsoncolor"
 
 	"github.com/oracle/oci-go-sdk/v65/common"
 	"github.com/oracle/oci-go-sdk/v65/database"
@@ -93,8 +93,8 @@ var create_databaseCmd = &cobra.Command{
 			// TODO: Add other parameters?
 		}
 		// TODO: print the configured options before and/or after the creation of the ADB???
-		s, _ := json.MarshalIndent(createADBDetails, "", "\t")
-		utils.Print(string(s))
+		//s, _ := json.MarshalIndent(createADBDetails, "", "\t")
+		//utils.Print(string(s))
 
 		// TODO: ask confirmation before proceeding??? Maybe not needed...
 

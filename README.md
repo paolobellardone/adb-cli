@@ -4,7 +4,17 @@ adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
 
 ## Quickstart Guide
 
-The cli has he following syntax:
+The cli needs a configuration file, you can create a sample one by using the following command:
+
+```sh
+adb-cli create config
+```
+
+The command will create a file named _adb-cli.yaml.template_, please modify it to suit your OCI configuration.
+
+The syntax is straigthforward and the template is fully documented.
+
+The cli has the following syntax:
 
 ```sh
 adb-cli [verb] [resource] [flags]

@@ -33,7 +33,6 @@ import (
 
 // GetAutonomousDatabaseOCID: returns the OCID of an ADB
 func GetAutonomousDatabaseOCID(client database.DatabaseClient, adbName string, compartmentOCID string) (string, error) {
-
 	// TODO: use dbName instead of display name because it can be multiple ???
 	// TODO: the ListAutonomousDatabase works on DisplayName to filter, if there are more than one list those and exit or make the user choose
 	dbRequest := database.ListAutonomousDatabasesRequest{
@@ -56,12 +55,10 @@ func GetAutonomousDatabaseOCID(client database.DatabaseClient, adbName string, c
 		PrintVerbose("The Autonomous Database " + adbName + " has id: " + adbOCID)
 		return adbOCID, nil
 	}
-
 }
 
 // GetAutonomousDatabase: returns the details of an ADB
 func GetAutonomousDatabase(client database.DatabaseClient, adbOCID string) (database.AutonomousDatabase, error) {
-
 	dbRequest := database.GetAutonomousDatabaseRequest{
 		AutonomousDatabaseId: common.String(adbOCID),
 	}
@@ -72,7 +69,6 @@ func GetAutonomousDatabase(client database.DatabaseClient, adbOCID string) (data
 	} else {
 		return dbResponse.AutonomousDatabase, nil
 	}
-
 }
 
 // DecodeADBTypeForCreate: converts the database type parameter to an Enum
@@ -87,7 +83,6 @@ func DecodeADBTypeForCreate(adbType string) (database.CreateAutonomousDatabaseBa
 		apex    : Autonomous Application Express
 		adw     : Autonomous Data Warehouse
 	*/
-
 	switch adbType {
 	case "atpfree":
 		return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, true
@@ -109,7 +104,6 @@ func DecodeADBTypeForCreate(adbType string) (database.CreateAutonomousDatabaseBa
 		// The default is atpfree
 		return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, true
 	}
-
 }
 
 // DecodeADBTypeForUpdate: converts the database type parameter to an Enum
@@ -124,7 +118,6 @@ func DecodeADBTypeForUpdate(adbType string) (database.UpdateAutonomousDatabaseDe
 		apex    : Autonomous Application Express
 		adw     : Autonomous Data Warehouse
 	*/
-
 	switch adbType {
 	case "atpfree":
 		return database.UpdateAutonomousDatabaseDetailsDbWorkloadOltp, true
@@ -146,7 +139,6 @@ func DecodeADBTypeForUpdate(adbType string) (database.UpdateAutonomousDatabaseDe
 		// The default is atpfree
 		return database.UpdateAutonomousDatabaseDetailsDbWorkloadOltp, true
 	}
-
 }
 
 // DecodeLicenseModelForCreate: converts the database license model parameter to an Enum
@@ -155,7 +147,6 @@ func DecodeLicenseModelForCreate(license_model string) database.CreateAutonomous
 	   full: License included
 	   byol: Bring your own license
 	*/
-
 	switch license_model {
 	case "full":
 		return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded
@@ -165,7 +156,6 @@ func DecodeLicenseModelForCreate(license_model string) database.CreateAutonomous
 		// The default is full
 		return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded
 	}
-
 }
 
 // DecodeLicenseModelForUpdate: converts the database license model parameter to an Enum
@@ -174,7 +164,6 @@ func DecodeLicenseModelForUpdate(license_model string) database.UpdateAutonomous
 	   full: License included
 	   byol: Bring your own license
 	*/
-
 	switch license_model {
 	case "full":
 		return database.UpdateAutonomousDatabaseDetailsLicenseModelLicenseIncluded
@@ -184,12 +173,10 @@ func DecodeLicenseModelForUpdate(license_model string) database.UpdateAutonomous
 		// The default is full
 		return database.UpdateAutonomousDatabaseDetailsLicenseModelLicenseIncluded
 	}
-
 }
 
 // CreateAutonomousDatabaseWallet: creates an ADB wallet file
 func CreateAutonomousDatabaseWallet(client database.DatabaseClient, adbName string, adbOCID string, password string) (string, error) {
-
 	generateADBWalletRequest := database.GenerateAutonomousDatabaseWalletRequest{
 		AutonomousDatabaseId: common.String(adbOCID),
 		GenerateAutonomousDatabaseWalletDetails: database.GenerateAutonomousDatabaseWalletDetails{
@@ -215,13 +202,10 @@ func CreateAutonomousDatabaseWallet(client database.DatabaseClient, adbName stri
 	}
 
 	return walletName, nil
-
 }
 
 // DeleteAutonmousDatabaseWallet: deletes an ADB wallet file
 func DeleteAutonmousDatabaseWallet(adbName string) error {
-
 	err := os.Remove("Wallet_" + adbName + ".zip")
 	return err
-
 }

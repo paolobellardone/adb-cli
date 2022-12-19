@@ -41,7 +41,6 @@ var salt = []byte{0xfe, 0x43, 0x18, 0x71, 0xa5, 0xb8, 0xc2, 0x92}
 var secret = []byte("ADB-Cli latest")
 
 func Encrypt(stringToEncrypt string) (encryptedString string) {
-
 	// Create a key from secret and salt
 	key, _ := scrypt.Key(secret, salt, 1<<15, 8, 1, 32)
 
@@ -75,7 +74,6 @@ func Encrypt(stringToEncrypt string) (encryptedString string) {
 }
 
 func Decrypt(encryptedString string) (decryptedString string) {
-
 	// Create a key from secret and salt
 	key, _ := scrypt.Key(secret, salt, 1<<15, 8, 1, 32)
 
@@ -106,5 +104,6 @@ func Decrypt(encryptedString string) (decryptedString string) {
 		panic(err.Error())
 	}
 
-	return fmt.Sprintf("%s", plaintext)
+	//return fmt.Sprintf("%s", plaintext)
+	return string(plaintext)
 }
