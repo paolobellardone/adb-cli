@@ -72,6 +72,11 @@ var create_databaseCmd = &cobra.Command{
 			storage = 1
 		}
 
+		if ociConfig.database_password == "" {
+			utils.PrintError("Error: database_password paramenter in config file can not be empty")
+			return
+		}
+
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
 		if err != nil {
 			utils.PrintError("Error: " + err.Error())

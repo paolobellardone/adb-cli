@@ -26,8 +26,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/fatih/color"
@@ -69,25 +67,12 @@ var delete_databaseCmd = &cobra.Command{
 		scanner.Scan()
 		if scanner.Text() == adbName {
 			color.Set(color.FgHiYellow)
-			fmt.Print("You asked to delete the Autonomous Database named " + scanner.Text() + ", press RETURN to continue or CTRL+C to abort...")
+			fmt.Print("You asked to delete the Autonomous Database named " + scanner.Text() + ", confirm? (Y/n)")
 			color.Unset()
-			// Enable CTRL+C hook
-			c := make(chan os.Signal)
-			signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-			go func() {
-				<-c
-				fmt.Println()
-				utils.PrintError("\rThe termination of the Autonomous Database " + adbName + " was ABORTED by the user!")
-				os.Exit(0)
-			}()
 			scanner.Scan()
-			if scanner.Text() != "" {
+			if scanner.Text() != "Y" {
 				utils.PrintError("The termination of the Autonomous Database " + adbName + " was ABORTED by the user!")
 			} else {
-				// Disable CTRL+C hook
-				signal.Stop(c)
-				close(c)
-
 				// Send the request using the service client
 				_, err := dbClient.DeleteAutonomousDatabase(context.Background(), database.DeleteAutonomousDatabaseRequest{AutonomousDatabaseId: common.String(adbOCID)})
 				if err != nil {
@@ -123,7 +108,7 @@ var delete_databaseCmd = &cobra.Command{
 				utils.PrintInfo("The Autonomous Database " + *adbInstance.DbName + " was terminated, the current status is: " + string(databaseStatus))
 			}
 		} else {
-			utils.PrintError("The Autonomous Database named " + adbName + " does not exists")
+			utils.PrintError("Error: The specified Autonomous Database name does not match")
 			return
 		}
 
