@@ -5,7 +5,7 @@ adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
 <details>
 <summary>Demo</summary>
 
-<img src="docs/adb-cli_demo.gif" width="60%"/>
+<img src="docs/adb-cli_demo.gif"/>
 
 </details>
 <br/>
