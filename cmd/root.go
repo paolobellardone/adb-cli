@@ -36,7 +36,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const cliVersion string = "0.1.0"
+const cliVersion string = "0.2.0"
 
 type ociConfigT struct {
 	user               string
@@ -95,6 +95,7 @@ func Execute() {
 				os.Exit(1)
 			}
 		}
+		rootCmd.DisableAutoGenTag = true
 		err := doc.GenMarkdownTree(rootCmd, path)
 		if err != nil {
 			utils.PrintError("Error: " + err.Error())

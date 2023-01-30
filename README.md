@@ -33,7 +33,7 @@ where
 * [verb] is:
   * _start_
   * _stop_
-  * _query_
+  * _inspect_
   * _create_
   * _delete_
 * [resource] is:

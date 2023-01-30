@@ -22,21 +22,32 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"os"
+
 	"github.com/paolobellardone/adb-cli/utils"
 
 	"github.com/spf13/cobra"
 )
 
-// queryCmd represents the query command, the allowed resources for this command are: config, database
-var queryCmd = &cobra.Command{
-	Use:   "query",
-	Short: "Query an OCI resource and/or supporting configuration - allowed resources: config, database",
-	Long:  "Query an OCI resource and/or supporting configuration.\nThe allowed resources are: config, database",
+// inspect_configCmd inspects and prints the default config file or the one specified by the --config flag
+var inspect_configCmd = &cobra.Command{
+	Use:   "config",
+	Short: "Inspect the configuration file specified by --config global flag",
+	Long:  "Inspect the configuration file specified by --config global flag",
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.PrintError("Please specify a resource. Allowed values: config, database")
+		utils.PrintVerbose("inspect config command called")
+
+		configData, err := os.ReadFile(cfgFile)
+		if err != nil {
+			utils.PrintError("Error: " + err.Error())
+			return
+		}
+		utils.Print(string(configData[:]))
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(queryCmd)
+	inspectCmd.AddCommand(inspect_configCmd)
+
+	// TODO: add the option to save the config to a file???
 }

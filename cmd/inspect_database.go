@@ -34,13 +34,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// query_databaseCmd queries the autonomous database specified by --name flag
-var query_databaseCmd = &cobra.Command{
+// inspect_databaseCmd inspects the autonomous database specified by --name flag
+var inspect_databaseCmd = &cobra.Command{
 	Use:   "database",
-	Short: "Query an Autonomous Database identified by the --name flag",
-	Long:  "Query an Autonomous Database identified by the --name flag",
+	Short: "Inspect an Autonomous Database identified by the --name flag",
+	Long:  "Inspect an Autonomous Database identified by the --name flag",
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.PrintVerbose("query database command called")
+		utils.PrintVerbose("inspect database command called")
 		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
 
 		var adbName, _ = cmd.Flags().GetString("name")
@@ -94,9 +94,9 @@ var query_databaseCmd = &cobra.Command{
 }
 
 func init() {
-	queryCmd.AddCommand(query_databaseCmd)
+	inspectCmd.AddCommand(inspect_databaseCmd)
 
-	query_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to inspect (required)")
-	query_databaseCmd.MarkFlagRequired("name")
-	query_databaseCmd.Flags().BoolP("full", "f", false, "print all the attributes of the Autonomous Database")
+	inspect_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to inspect (required)")
+	inspect_databaseCmd.MarkFlagRequired("name")
+	inspect_databaseCmd.Flags().BoolP("full", "f", false, "print all the attributes of the Autonomous Database")
 }
