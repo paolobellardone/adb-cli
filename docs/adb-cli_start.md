@@ -28,6 +28,6 @@ adb-cli start [flags]
 
 ### SEE ALSO
 
-* [adb-cli](adb-cli.md)	 - adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+* [adb-cli](adb-cli.md)	 - adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli start database](adb-cli_start_database.md)	 - Start an Autonomous Database identified by the --name flag
 

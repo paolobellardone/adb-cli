@@ -28,7 +28,7 @@ adb-cli delete [flags]
 
 ### SEE ALSO
 
-* [adb-cli](adb-cli.md)	 - adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+* [adb-cli](adb-cli.md)	 - adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli delete config](adb-cli_delete_config.md)	 - Delete the configuration file specified by --config global flag
 * [adb-cli delete database](adb-cli_delete_database.md)	 - Delete an Autonomous Database identified by the --name flag
 * [adb-cli delete wallet](adb-cli_delete_wallet.md)	 - Delete the wallet for an Autonomous Database identified by the --name flag

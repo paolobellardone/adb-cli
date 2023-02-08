@@ -33,8 +33,6 @@ import (
 	"encoding/pem"
 	"path/filepath"
 
-	"github.com/oracle/oci-go-sdk/v65/common"
-
 	"github.com/paolobellardone/adb-cli/utils"
 
 	"github.com/spf13/cobra"
@@ -134,7 +132,7 @@ Duplicate the file and edit as needed (documentation included) to configure the 
 to operate on your OCI tenancy.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("create config command called")
-		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		withKeys, _ := cmd.Flags().GetBool("with-keys")
 		if withKeys {

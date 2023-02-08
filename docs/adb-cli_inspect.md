@@ -28,7 +28,7 @@ adb-cli inspect [flags]
 
 ### SEE ALSO
 
-* [adb-cli](adb-cli.md)	 - adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+* [adb-cli](adb-cli.md)	 - adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli inspect config](adb-cli_inspect_config.md)	 - Inspect the configuration file specified by --config global flag
 * [adb-cli inspect database](adb-cli_inspect_database.md)	 - Inspect an Autonomous Database identified by the --name flag
 

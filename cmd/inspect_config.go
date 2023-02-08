@@ -36,6 +36,7 @@ var inspect_configCmd = &cobra.Command{
 	Long:  "Inspect the configuration file specified by --config global flag",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("inspect config command called")
+		utils.PrintVerbose("")
 
 		configData, err := os.ReadFile(cfgFile)
 		if err != nil {

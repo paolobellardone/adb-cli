@@ -40,7 +40,7 @@ var create_walletCmd = &cobra.Command{
 	Long:  "Create the wallet for an Autonomous Database identified by the --name flag",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("create wallet command called")
-		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		var adbName, _ = cmd.Flags().GetString("name")
 		var walletPassword, _ = cmd.Flags().GetString("password")

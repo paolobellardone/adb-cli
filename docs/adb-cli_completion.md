@@ -25,7 +25,7 @@ See each sub-command's help for details on how to use the generated script.
 
 ### SEE ALSO
 
-* [adb-cli](adb-cli.md)	 - adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+* [adb-cli](adb-cli.md)	 - adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli completion bash](adb-cli_completion_bash.md)	 - Generate the autocompletion script for bash
 * [adb-cli completion fish](adb-cli_completion_fish.md)	 - Generate the autocompletion script for fish
 * [adb-cli completion powershell](adb-cli_completion_powershell.md)	 - Generate the autocompletion script for powershell

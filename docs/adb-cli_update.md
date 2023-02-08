@@ -28,6 +28,6 @@ adb-cli update [flags]
 
 ### SEE ALSO
 
-* [adb-cli](adb-cli.md)	 - adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+* [adb-cli](adb-cli.md)	 - adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli update database](adb-cli_update_database.md)	 - Update the parameters of an Autonomous Database identified by the --name flag
 

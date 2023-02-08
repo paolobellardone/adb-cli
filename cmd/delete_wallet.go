@@ -22,8 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/oracle/oci-go-sdk/v65/common"
-
 	"github.com/paolobellardone/adb-cli/utils"
 
 	"github.com/spf13/cobra"
@@ -36,7 +34,7 @@ var delete_walletCmd = &cobra.Command{
 	Long:  "Delete the wallet for an Autonomous Database identified by the --name flag",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("delete wallet command called")
-		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		var adbName, _ = cmd.Flags().GetString("name")
 

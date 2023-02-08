@@ -52,7 +52,7 @@ func GetAutonomousDatabaseOCID(client database.DatabaseClient, adbName string, c
 		return "", errors.New("There are too many autonomous databases with the same name, it is not possible")
 	} else {
 		adbOCID = *dbResponse.Items[0].Id
-		PrintVerbose("The Autonomous Database " + adbName + " has id: " + adbOCID)
+		//PrintVerbose("The Autonomous Database " + adbName + " has id: " + adbOCID)
 		return adbOCID, nil
 	}
 }

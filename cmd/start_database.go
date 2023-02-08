@@ -40,7 +40,7 @@ var start_databaseCmd = &cobra.Command{
 	Long:  "Start an Autonomous Database identified by the --name flag",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("start database command called")
-		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		var adbName, _ = cmd.Flags().GetString("name")
 

@@ -22,8 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/oracle/oci-go-sdk/v65/common"
-
 	"github.com/paolobellardone/adb-cli/utils"
 
 	"github.com/spf13/cobra"
@@ -36,7 +34,7 @@ var delete_configCmd = &cobra.Command{
 	Long:  "Delete the configuration file specified by --config global flag",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("delete config command called")
-		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		// TODO: implement the feature
 		// TODO: delete the config file or the config template?

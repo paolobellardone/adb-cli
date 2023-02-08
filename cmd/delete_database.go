@@ -45,7 +45,7 @@ var delete_databaseCmd = &cobra.Command{
 	Long:  "Delete an Autonomous Database identified by the --name flag",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("delete database command called")
-		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		var adbName, _ = cmd.Flags().GetString("name")
 

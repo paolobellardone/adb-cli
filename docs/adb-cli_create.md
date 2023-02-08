@@ -28,7 +28,7 @@ adb-cli create [flags]
 
 ### SEE ALSO
 
-* [adb-cli](adb-cli.md)	 - adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+* [adb-cli](adb-cli.md)	 - adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli create config](adb-cli_create_config.md)	 - Create the configuration template file with name adb-cli.yaml.template
 * [adb-cli create database](adb-cli_create_database.md)	 - Create an Autonomous Database identified by the --name flag
 * [adb-cli create wallet](adb-cli_create_wallet.md)	 - Create the wallet for an Autonomous Database identified by the --name flag

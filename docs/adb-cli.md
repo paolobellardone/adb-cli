@@ -1,10 +1,10 @@
 ## adb-cli
 
-adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 
 ### Synopsis
 
-adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 
 ### Options
 

@@ -29,6 +29,8 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 
+	"github.com/oracle/oci-go-sdk/v65/common"
+
 	"github.com/paolobellardone/adb-cli/utils"
 
 	"github.com/spf13/cobra"
@@ -36,7 +38,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const cliVersion string = "0.2.0"
+const cliVersion string = "0.2.1"
 
 type ociConfigT struct {
 	user               string
@@ -62,8 +64,8 @@ var ociConfig ociConfigT
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "adb-cli",
-	Short:   "adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy",
-	Long:    "adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy",
+	Short:   "adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy",
+	Long:    "adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy",
 	Version: cliVersion,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -141,13 +143,15 @@ func initConfig() {
 	// If a config file is found, read it.
 	if err := viper.ReadInConfig(); err == nil {
 		// These are printed only if the verbose flag is specified
-		utils.PrintVerbose("Architecture     : " + runtime.GOARCH) // eventualmente spostarli altrove
-		utils.PrintVerbose("OS family        : " + runtime.GOOS)
-		utils.PrintVerbose("GO version       : " + runtime.Version())
+		utils.PrintVerbose("Architecture          : " + runtime.GOARCH) // eventualmente spostarli altrove
+		utils.PrintVerbose("OS family             : " + runtime.GOOS)
+		utils.PrintVerbose("GO version            : " + runtime.Version())
+		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		utils.PrintInfo("Using config file: " + viper.ConfigFileUsed())
 		utils.PrintInfo("Using profile    : " + cfgFileProfile)
-		utils.Print("")
+		utils.PrintInfo("")
 
 		// If there is no DEFAULT profile, print error and exit
 		if !viper.GetViper().InConfig("DEFAULT") {

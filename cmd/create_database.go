@@ -42,7 +42,7 @@ var create_databaseCmd = &cobra.Command{
 	Long:  "Create an Autonomous Database identified by the --name flag",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintVerbose("create database command called")
-		utils.PrintVerbose("OCI SDK for Go version: " + common.Version())
+		utils.PrintVerbose("")
 
 		// TODO: print the connection URL for the database and/or the connection strings???
 

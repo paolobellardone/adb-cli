@@ -28,6 +28,6 @@ adb-cli stop [flags]
 
 ### SEE ALSO
 
-* [adb-cli](adb-cli.md)	 - adb-cli is yet another cli to manage Autonomous Databases in your OCI tenancy
+* [adb-cli](adb-cli.md)	 - adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli stop database](adb-cli_stop_database.md)	 - Stop an Autonomous Database identified by the --name flag
 
