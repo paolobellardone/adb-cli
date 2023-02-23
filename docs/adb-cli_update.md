@@ -1,4 +1,4 @@
-## adb-cli update
+## adb-cli update -- NOT IMPLEMETED YET
 
 Update an OCI resource - allowed resources: database
 
