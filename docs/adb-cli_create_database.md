@@ -16,7 +16,7 @@ adb-cli create database [flags]
       --enable-ocpu-autoscaling      enable autoscaling for OCPUs (max 3x the number of allocated OCPUs)
       --enable-storage-autoscaling   enable autoscaling for storage (max 3x the size of reserved storage)
   -h, --help                         help for database
-  -l, --license-model string         the licensing model to use - allowed values: full, byol - not used for Free Tier (default "full")
+  -l, --license-model string         the licensing model to use - allowed values: full, byolee, byolse - not used for Free Tier (default "full")
   -n, --name string                  the name of the Autonomous Database to create (required)
   -o, --ocpus int                    the number of OCPUs to allocate for the Autonomous Database - not used for Free Tier (default 1)
   -s, --storage int                  the size of storage in TB to allocate for the Autonomous Database - not used for Free Tier (default 1)
