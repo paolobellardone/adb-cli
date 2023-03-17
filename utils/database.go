@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 PaoloB
+Copyright © 2022-2023 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -71,8 +71,8 @@ func GetAutonomousDatabase(client database.DatabaseClient, adbOCID string) (data
 	}
 }
 
-// DecodeADBTypeForCreate: converts the database type parameter to an Enum
-func DecodeADBTypeForCreate(adbType string) (database.CreateAutonomousDatabaseBaseDbWorkloadEnum, bool) {
+// DecodeADBType: converts the database type parameter to an Enum
+func DecodeADBType(adbType string, op string) (any, bool) {
 	/*
 		atpfree : Always Free Autonomous Transaction Processing (default)
 		ajdfree : Always Free Autonomous JSON Database
@@ -83,95 +83,91 @@ func DecodeADBTypeForCreate(adbType string) (database.CreateAutonomousDatabaseBa
 		apex    : Autonomous Application Express
 		adw     : Autonomous Data Warehouse
 	*/
-	switch adbType {
-	case "atpfree":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, true
-	case "ajdfree":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadAjd, true
-	case "apexfree":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadApex, true
-	case "adwfree":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadDw, true
-	case "atp":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, false
-	case "ajd":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadAjd, false
-	case "apex":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadApex, false
-	case "adw":
-		return database.CreateAutonomousDatabaseBaseDbWorkloadDw, false
-	default:
-		// The default is atpfree
-		return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, true
+	if op == "create" {
+		switch adbType {
+		case "atpfree":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, true
+		case "ajdfree":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadAjd, true
+		case "apexfree":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadApex, true
+		case "adwfree":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadDw, true
+		case "atp":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, false
+		case "ajd":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadAjd, false
+		case "apex":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadApex, false
+		case "adw":
+			return database.CreateAutonomousDatabaseBaseDbWorkloadDw, false
+		default:
+			// The default is atpfree
+			return database.CreateAutonomousDatabaseBaseDbWorkloadOltp, true
+		}
+	} else if op == "update" {
+		switch adbType {
+		case "atpfree":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadOltp, true
+		case "ajdfree":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadAjd, true
+		case "apexfree":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadApex, true
+		case "adwfree":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadDw, true
+		case "atp":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadOltp, false
+		case "ajd":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadAjd, false
+		case "apex":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadApex, false
+		case "adw":
+			return database.UpdateAutonomousDatabaseDetailsDbWorkloadDw, false
+		default:
+			// For update return a null value and false
+			return nil, false
+		}
+	} else {
+		// It should not arrive here
+		return nil, false
 	}
 }
 
-// DecodeADBTypeForUpdate: converts the database type parameter to an Enum
-func DecodeADBTypeForUpdate(adbType string) (database.UpdateAutonomousDatabaseDetailsDbWorkloadEnum, bool) {
-	/*
-		atpfree : Always Free Autonomous Transaction Processing (default)
-		ajdfree : Always Free Autonomous JSON Database
-		apexfree: Always Free Autonomous Application Express
-		adwfree : Always Free Autonomous Data Warehouse
-		atp     : Autonomous Transaction Processing
-		ajd     : Autonomous JSON Database
-		apex    : Autonomous Application Express
-		adw     : Autonomous Data Warehouse
-	*/
-	switch adbType {
-	case "atpfree":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadOltp, true
-	case "ajdfree":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadAjd, true
-	case "apexfree":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadApex, true
-	case "adwfree":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadDw, true
-	case "atp":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadOltp, false
-	case "ajd":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadAjd, false
-	case "apex":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadApex, false
-	case "adw":
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadDw, false
-	default:
-		// The default is atpfree
-		return database.UpdateAutonomousDatabaseDetailsDbWorkloadOltp, true
-	}
-}
-
-// DecodeLicenseModelForCreate: converts the database license model parameter to an Enum
-func DecodeLicenseModelForCreate(license_model string) database.CreateAutonomousDatabaseBaseLicenseModelEnum {
+// DecodeLicenseModel: converts the database license model parameter to two Enums, one for byol, the other for license
+func DecodeLicenseModel(license_model string, op string) (any, any) {
 	/*
 	   full: License included
-	   byol: Bring your own license
+	   byolee: Bring your own license - Enterprise Edition
+	   byolse: Bring your own license - Standard Edition
 	*/
-	switch license_model {
-	case "full":
-		return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded
-	case "byol":
-		return database.CreateAutonomousDatabaseBaseLicenseModelBringYourOwnLicense
-	default:
-		// The default is full
-		return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded
-	}
-}
-
-// DecodeLicenseModelForUpdate: converts the database license model parameter to an Enum
-func DecodeLicenseModelForUpdate(license_model string) database.UpdateAutonomousDatabaseDetailsLicenseModelEnum {
-	/*
-	   full: License included
-	   byol: Bring your own license
-	*/
-	switch license_model {
-	case "full":
-		return database.UpdateAutonomousDatabaseDetailsLicenseModelLicenseIncluded
-	case "byol":
-		return database.UpdateAutonomousDatabaseDetailsLicenseModelBringYourOwnLicense
-	default:
-		// The default is full
-		return database.UpdateAutonomousDatabaseDetailsLicenseModelLicenseIncluded
+	if op == "create" {
+		switch license_model {
+		case "full":
+			//return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded, nil
+			return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded, nil
+		case "byolee":
+			return database.CreateAutonomousDatabaseBaseLicenseModelBringYourOwnLicense, database.AutonomousDatabaseSummaryDatabaseEditionEnterpriseEdition
+		case "byolse":
+			return database.CreateAutonomousDatabaseBaseLicenseModelBringYourOwnLicense, database.AutonomousDatabaseSummaryDatabaseEditionStandardEdition
+		default:
+			// The default is full
+			return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded, nil
+		}
+	} else if op == "update" {
+		switch license_model {
+		case "full":
+			return database.UpdateAutonomousDatabaseDetailsLicenseModelLicenseIncluded, nil
+		case "byolee":
+			return database.UpdateAutonomousDatabaseDetailsLicenseModelBringYourOwnLicense, database.AutonomousDatabaseSummaryDatabaseEditionEnterpriseEdition
+		case "byolse":
+			return database.UpdateAutonomousDatabaseDetailsLicenseModelBringYourOwnLicense, database.AutonomousDatabaseSummaryDatabaseEditionStandardEdition
+		default:
+			// The default is full
+			return database.UpdateAutonomousDatabaseDetailsLicenseModelLicenseIncluded, nil
+		}
+	} else {
+		// It should not arrive here
+		return nil, nil
 	}
 }
 

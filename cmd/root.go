@@ -38,7 +38,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const cliVersion string = "0.2.1"
+const cliVersion string = "0.2.3"
 
 type ociConfigT struct {
 	user               string
@@ -56,10 +56,12 @@ type ociConfigT struct {
 	//database_tables       string
 }
 
-var cfgFile string
-var cfgFileProfile string
+var (
+	cfgFile        string
+	cfgFileProfile string
 
-var ociConfig ociConfigT
+	ociConfig ociConfigT
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

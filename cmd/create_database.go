@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 PaoloB
+Copyright © 2022-2023 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,30 +46,62 @@ var create_databaseCmd = &cobra.Command{
 
 		// TODO: print the connection URL for the database and/or the connection strings???
 
-		var adbName, _ = cmd.Flags().GetString("name")
-		if len(adbName) > 14 {
-			// If the name of the Autonomoous Database is longer than 14 chars then truncate it
-			adbName = adbName[:14]
-		}
+		var adbName string
+		var databaseType string
 		var ocpus int
 		var storage int
-		var database_type, _ = cmd.Flags().GetString("type")
-		var adbType, isFree = utils.DecodeADBTypeForCreate(database_type)
 		var enableOCPUAutoscaling bool
 		var enableStorageAutoscaling bool
-		var license_model database.CreateAutonomousDatabaseBaseLicenseModelEnum
+		var licenseModel string
+		var createADBDetails database.CreateAutonomousDatabaseDetails
+		var adbType interface{}
+		var isFree bool
+
+		// Evaluate first the parameters specified inside the configuration file and then the command line
+		createADBDetails.CompartmentId = common.String(ociConfig.compartment_id)
+		createADBDetails.AdminPassword = common.String(ociConfig.database_password)
+
+		adbName, _ = cmd.Flags().GetString("name")
+		if len(adbName) > 14 {
+			// If the name of the Autonomous Database is longer than 14 chars then truncate it
+			adbName = adbName[:14]
+		}
+		createADBDetails.DbName = common.String(adbName)
+		createADBDetails.DisplayName = common.String(adbName)
+
+		databaseType, _ = cmd.Flags().GetString("type")
+		adbType, isFree = utils.DecodeADBType(databaseType, "create")
+		createADBDetails.DbWorkload = adbType.(database.CreateAutonomousDatabaseBaseDbWorkloadEnum)
+		createADBDetails.IsFreeTier = common.Bool(isFree)
+
+		ocpus, _ = cmd.Flags().GetInt("ocpus")
 		if !isFree {
-			_tmp, _ := cmd.Flags().GetString("license-model")
-			license_model = utils.DecodeLicenseModelForCreate(_tmp)
-			ocpus, _ = cmd.Flags().GetInt("ocpus")
-			storage, _ = cmd.Flags().GetInt("storage")
-			enableOCPUAutoscaling, _ = cmd.Flags().GetBool("enable-ocpu-autoscaling")
-			enableStorageAutoscaling, _ = cmd.Flags().GetBool("enable-storage-autoscaling")
+			createADBDetails.CpuCoreCount = common.Int(ocpus)
 		} else {
-			// If the Autonomous Database is a Free Tier, the OCPUs are limited to 1 and the Storage is limited to 20 GB
-			// TODO: is it really needed???
-			ocpus = 1
-			storage = 1
+			createADBDetails.CpuCoreCount = common.Int(1)
+		}
+
+		storage, _ = cmd.Flags().GetInt("storage")
+		if !isFree {
+			createADBDetails.DataStorageSizeInTBs = common.Int(storage)
+		} else {
+			createADBDetails.DataStorageSizeInTBs = common.Int(1)
+		}
+
+		enableOCPUAutoscaling, _ = cmd.Flags().GetBool("enable-ocpu-autoscaling")
+		if !isFree {
+			createADBDetails.IsAutoScalingEnabled = common.Bool(enableOCPUAutoscaling)
+		}
+		enableStorageAutoscaling, _ = cmd.Flags().GetBool("enable-storage-autoscaling")
+		if !isFree {
+			createADBDetails.IsAutoScalingForStorageEnabled = common.Bool(enableStorageAutoscaling)
+		}
+
+		licenseModel, _ = cmd.Flags().GetString("license-model")
+		if !isFree {
+			_t1, _t2 := utils.DecodeLicenseModel(licenseModel, "create")
+			createADBDetails.LicenseModel = _t1.(database.CreateAutonomousDatabaseBaseLicenseModelEnum)
+			createADBDetails.DatabaseEdition = _t2.(database.AutonomousDatabaseSummaryDatabaseEditionEnum)
 		}
 
 		if ociConfig.database_password == "" {
@@ -83,25 +115,9 @@ var create_databaseCmd = &cobra.Command{
 			return
 		}
 
-		createADBDetails := database.CreateAutonomousDatabaseDetails{
-			CompartmentId:                  &ociConfig.compartment_id,
-			DbName:                         common.String(adbName),
-			CpuCoreCount:                   common.Int(ocpus),
-			DataStorageSizeInTBs:           common.Int(storage),
-			IsFreeTier:                     &isFree,
-			AdminPassword:                  &ociConfig.database_password,
-			DisplayName:                    common.String(adbName),
-			IsAutoScalingEnabled:           common.Bool(enableOCPUAutoscaling),
-			IsAutoScalingForStorageEnabled: common.Bool(enableStorageAutoscaling),
-			DbWorkload:                     adbType,
-			LicenseModel:                   license_model,
-			// TODO: Add other parameters?
-		}
 		// TODO: print the configured options before and/or after the creation of the ADB???
 		//s, _ := json.MarshalIndent(createADBDetails, "", "\t")
 		//utils.Print(string(s))
-
-		// TODO: ask confirmation before proceeding??? Maybe not needed...
 
 		createADBResponse, err := dbClient.CreateAutonomousDatabase(
 			context.Background(),
@@ -163,5 +179,5 @@ func init() {
 	create_databaseCmd.Flags().IntP("storage", "s", 1, "the size of storage in TB to allocate for the Autonomous Database - not used for Free Tier")
 	create_databaseCmd.Flags().Bool("enable-ocpu-autoscaling", false, "enable autoscaling for OCPUs (max 3x the number of allocated OCPUs)")
 	create_databaseCmd.Flags().Bool("enable-storage-autoscaling", false, "enable autoscaling for storage (max 3x the size of reserved storage)")
-	create_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byol - not used for Free Tier")
+	create_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byolee, byolse - not used for Free Tier")
 }

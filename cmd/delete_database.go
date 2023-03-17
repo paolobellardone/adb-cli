@@ -67,7 +67,7 @@ var delete_databaseCmd = &cobra.Command{
 		scanner.Scan()
 		if scanner.Text() == adbName {
 			color.Set(color.FgHiYellow)
-			fmt.Print("You asked to delete the Autonomous Database named " + scanner.Text() + ", confirm? (Y/n)")
+			fmt.Print("You asked to delete the Autonomous Database named " + scanner.Text() + ", confirm? (Y/n) ")
 			color.Unset()
 			scanner.Scan()
 			if scanner.Text() != "Y" {

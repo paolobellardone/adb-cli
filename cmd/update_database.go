@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 PaoloB
+Copyright © 2022-2023 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ import (
 	"context"
 	"time"
 
-	json "github.com/nwidger/jsoncolor"
+	//json "github.com/nwidger/jsoncolor"
 
 	"github.com/oracle/oci-go-sdk/v65/common"
 	"github.com/oracle/oci-go-sdk/v65/database"
@@ -44,30 +44,65 @@ var update_databaseCmd = &cobra.Command{
 		utils.PrintVerbose("update database command called")
 		utils.PrintVerbose("")
 
-		var adbName, _ = cmd.Flags().GetString("name")
-		if len(adbName) > 14 {
-			// If the name of the Autonomoous Database is longer than 14 chars then truncate it
-			adbName = adbName[:14]
-		}
+		var adbName string
+		var databaseType string
 		var ocpus int
 		var storage int
-		var database_type, _ = cmd.Flags().GetString("type")
-		var adbType, isFree = utils.DecodeADBTypeForUpdate(database_type)
 		var enableOCPUAutoscaling bool
 		var enableStorageAutoscaling bool
-		var license_model database.UpdateAutonomousDatabaseDetailsLicenseModelEnum
-		if !isFree {
-			_tmp, _ := cmd.Flags().GetString("license-model")
-			license_model = utils.DecodeLicenseModelForUpdate(_tmp)
+		//var disableOCPUAutoscaling bool
+		//var disableStorageAutoscaling bool
+		var licenseModel string
+
+		// Semplificare cosa si può modificare, sicuramente non il tipo (adw/atp ecc) mettere solo le configurazioni di base cpu/storage ecc
+		// E' possibile solo fare una operazione per volta!!! modificare
+		// per cambiare la licenza a byol è necessario specificare il tipo di licenza, anche per create!!! (Standard o Enterprise)
+		var updateADBDetails database.UpdateAutonomousDatabaseDetails
+		var adbType interface{}
+		var isFree bool
+
+		adbName, _ = cmd.Flags().GetString("name")
+		if len(adbName) > 14 {
+			// If the name of the Autonomous Database is longer than 14 chars then truncate it
+			adbName = adbName[:14]
+		}
+
+		if cmd.Flags().Changed("type") {
+			databaseType, _ = cmd.Flags().GetString("type")
+			adbType, isFree = utils.DecodeADBType(databaseType, "update")
+			updateADBDetails.DbWorkload = adbType.(database.UpdateAutonomousDatabaseDetailsDbWorkloadEnum)
+			updateADBDetails.IsFreeTier = common.Bool(isFree)
+		}
+		if cmd.Flags().Changed("ocpus") {
 			ocpus, _ = cmd.Flags().GetInt("ocpus")
+			updateADBDetails.CpuCoreCount = common.Int(ocpus)
+		}
+		if cmd.Flags().Changed("storage") {
 			storage, _ = cmd.Flags().GetInt("storage")
+			updateADBDetails.DataStorageSizeInTBs = common.Int(storage)
+		}
+		if cmd.Flags().Changed("enable-ocpu-autoscaling") {
 			enableOCPUAutoscaling, _ = cmd.Flags().GetBool("enable-ocpu-autoscaling")
+			updateADBDetails.IsAutoScalingEnabled = common.Bool(enableOCPUAutoscaling)
+		}
+		if cmd.Flags().Changed("enable-storage-autoscaling") {
 			enableStorageAutoscaling, _ = cmd.Flags().GetBool("enable-storage-autoscaling")
-		} else {
-			// If the Autonomous Database is a Free Tier, the OCPUs are limited to 1 and the Storage is limited to 20 GB
-			// TODO: is it really needed???
-			ocpus = 1
-			storage = 1
+			updateADBDetails.IsAutoScalingEnabled = common.Bool(enableStorageAutoscaling)
+		}
+		if cmd.Flags().Changed("disable-ocpu-autoscaling") {
+			//disableOCPUAutoscaling, _ = cmd.Flags().GetBool("disable-ocpu-autoscaling")
+			updateADBDetails.IsAutoScalingEnabled = common.Bool(false)
+		}
+		if cmd.Flags().Changed("disable-storage-autoscaling") {
+			//disableStorageAutoscaling, _ = cmd.Flags().GetBool("disable-storage-autoscaling")
+			updateADBDetails.IsAutoScalingEnabled = common.Bool(false)
+		}
+		if cmd.Flags().Changed("license-model") {
+			licenseModel, _ = cmd.Flags().GetString("license-model")
+			//updateADBDetails.LicenseModel = utils.DecodeLicenseModel(licenseModel, "update").(database.UpdateAutonomousDatabaseDetailsLicenseModelEnum)
+			var _t1, _t2 = utils.DecodeLicenseModel(licenseModel, "update")
+			updateADBDetails.LicenseModel = _t1.(database.UpdateAutonomousDatabaseDetailsLicenseModelEnum)
+			updateADBDetails.DatabaseEdition = _t2.(database.AutonomousDatabaseSummaryDatabaseEditionEnum)
 		}
 
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
@@ -76,27 +111,20 @@ var update_databaseCmd = &cobra.Command{
 			return
 		}
 
-		updateADBDetails := database.UpdateAutonomousDatabaseDetails{
-			DbName:                         common.String(adbName),
-			CpuCoreCount:                   common.Int(ocpus),
-			DataStorageSizeInTBs:           common.Int(storage),
-			IsFreeTier:                     &isFree,
-			AdminPassword:                  &ociConfig.database_password,
-			DisplayName:                    common.String(adbName),
-			IsAutoScalingEnabled:           common.Bool(enableOCPUAutoscaling),
-			IsAutoScalingForStorageEnabled: common.Bool(enableStorageAutoscaling),
-			DbWorkload:                     adbType,
-			LicenseModel:                   license_model,
-			// TODO: Add other parameters?
+		adbOCID, err := utils.GetAutonomousDatabaseOCID(dbClient, adbName, ociConfig.compartment_id)
+		if err != nil {
+			utils.PrintError("Error: " + err.Error())
+			return
 		}
 
 		// TODO: print the configured options before and/or after the update of the ADB???
-		s, _ := json.MarshalIndent(updateADBDetails, "", "\t")
-		utils.Print(string(s))
+		//s, _ := json.MarshalIndent(updateADBDetails, "", "\t")
+		//utils.Print(string(s))
 
 		updateADBResponse, err := dbClient.UpdateAutonomousDatabase(
 			context.Background(),
 			database.UpdateAutonomousDatabaseRequest{
+				AutonomousDatabaseId:            common.String(adbOCID),
 				UpdateAutonomousDatabaseDetails: updateADBDetails,
 			})
 		if err != nil {
@@ -105,7 +133,8 @@ var update_databaseCmd = &cobra.Command{
 		}
 
 		utils.PrintInfo("The Autonomous Database " + *updateADBResponse.AutonomousDatabase.DbName + " status is currently: " + string(updateADBResponse.AutonomousDatabase.LifecycleState))
-		if updateADBResponse.AutonomousDatabase.LifecycleState == database.AutonomousDatabaseLifecycleStateUpdating {
+		if updateADBResponse.AutonomousDatabase.LifecycleState == database.AutonomousDatabaseLifecycleStateUpdating ||
+			updateADBResponse.AutonomousDatabase.LifecycleState == database.AutonomousDatabaseLifecycleStateScaleInProgress {
 			utils.PrintVerbose("Updating autonomous database " + adbName + ", please wait...")
 
 			databaseUpdating := true
@@ -131,6 +160,7 @@ var update_databaseCmd = &cobra.Command{
 			utils.PrintError("Error during updating of the Autonomous Database " + adbName + ". Please check the OCI console for errors...")
 			return
 		}
+
 	},
 }
 
@@ -144,5 +174,7 @@ func init() {
 	update_databaseCmd.Flags().IntP("storage", "s", 1, "the size of storage in TB to allocate for the Autonomous Database - not used for Free Tier")
 	update_databaseCmd.Flags().Bool("enable-ocpu-autoscaling", false, "enable autoscaling for OCPUs (max 3x the number of allocated OCPUs)")
 	update_databaseCmd.Flags().Bool("enable-storage-autoscaling", false, "enable autoscaling for storage (max 3x the size of reserved storage)")
-	update_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byol - not used for Free Tier")
+	update_databaseCmd.Flags().Bool("disable-ocpu-autoscaling", false, "disable autoscaling for OCPUs")
+	update_databaseCmd.Flags().Bool("disable-storage-autoscaling", false, "disable autoscaling for storage")
+	update_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byolee, byolse - not used for Free Tier")
 }
