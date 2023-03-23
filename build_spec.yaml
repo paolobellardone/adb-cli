@@ -25,4 +25,5 @@ steps:
     command: |
       export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
       echo "BUILDRUN_HASH: " $BUILDRUN_HASH
-      yum list available | grep go
+      yum install -y oracle-golang-release-el7
+      yum install -y golang
