@@ -21,10 +21,11 @@
 BINARY_NAME=adb-cli
 
 build:
+	mkdir executables
 	GOARCH=amd64 GOOS=darwin go build -o executables/${BINARY_NAME}.darwin
 	GOARCH=amd64 GOOS=linux go build -o executables/${BINARY_NAME}.linux
 	GOARCH=amd64 GOOS=windows go build -o executables/${BINARY_NAME}.exe
-	mv executables/${BINARY_NAME}.darwin ${BINARY_NAME}
+	cp executables/${BINARY_NAME}.darwin ${BINARY_NAME}
 
 run: build
 	./${BINARY_NAME}
@@ -34,3 +35,4 @@ clean:
 	rm executables/${BINARY_NAME}.darwin
 	rm executables/${BINARY_NAME}.linux
 	rm executables/${BINARY_NAME}.exe
+	rmdir executables

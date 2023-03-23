@@ -25,12 +25,17 @@ steps:
     command: |
       export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
       echo "BUILDRUN_HASH: " $BUILDRUN_HASH
+
+  - type: Command
+    name: "Setup the build environment"
+    timeoutInSeconds: 6000
+    command: |
       yum install -y oracle-golang-release-el7
       yum install -y golang
+
   - type: Command
     name: "Build the source"
-    timeoutInSeconds: 360
+    timeoutInSeconds: 6000
     command: |
-      echo "************************"
-      echo ${OCI_PRIMARY_SOURCE_DIR}
-      echo "************************"
+      cd ${OCI_PRIMARY_SOURCE_DIR}
+      make
