@@ -90,16 +90,13 @@ var update_databaseCmd = &cobra.Command{
 			updateADBDetails.IsAutoScalingEnabled = common.Bool(enableStorageAutoscaling)
 		}
 		if cmd.Flags().Changed("disable-ocpu-autoscaling") {
-			//disableOCPUAutoscaling, _ = cmd.Flags().GetBool("disable-ocpu-autoscaling")
 			updateADBDetails.IsAutoScalingEnabled = common.Bool(false)
 		}
 		if cmd.Flags().Changed("disable-storage-autoscaling") {
-			//disableStorageAutoscaling, _ = cmd.Flags().GetBool("disable-storage-autoscaling")
 			updateADBDetails.IsAutoScalingEnabled = common.Bool(false)
 		}
 		if cmd.Flags().Changed("license-model") {
 			licenseModel, _ = cmd.Flags().GetString("license-model")
-			//updateADBDetails.LicenseModel = utils.DecodeLicenseModel(licenseModel, "update").(database.UpdateAutonomousDatabaseDetailsLicenseModelEnum)
 			var _t1, _t2 = utils.DecodeLicenseModel(licenseModel, "update")
 			updateADBDetails.LicenseModel = _t1.(database.UpdateAutonomousDatabaseDetailsLicenseModelEnum)
 			updateADBDetails.DatabaseEdition = _t2.(database.AutonomousDatabaseSummaryDatabaseEditionEnum)

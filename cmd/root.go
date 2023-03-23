@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 PaoloB
+Copyright © 2022-2023 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -131,7 +131,7 @@ func initConfig() {
 		viper.SetConfigType("yaml")
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// ...or use the default one named adb-cli.config in the current directory.
+		// ...or use the default one named adb-cli.yaml in the current directory.
 		viper.AddConfigPath("./")
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("adb-cli")
@@ -180,7 +180,7 @@ func initConfig() {
 				viper.Set(cfgFileProfile+".database_password", "{"+utils.Encrypt(ociConfig.database_password)+"}")
 				err = viper.WriteConfig()
 				if err != nil {
-					utils.Print("***** NOT DONE" + err.Error())
+					utils.PrintError("Error while encrypting database_password value: " + err.Error())
 				}
 			}
 

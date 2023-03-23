@@ -21,16 +21,16 @@
 BINARY_NAME=adb-cli
 
 build:
-	GOARCH=amd64 GOOS=darwin go build -o executables/${BINARY_NAME}-darwin #main.go
-	GOARCH=amd64 GOOS=linux go build -o executables/${BINARY_NAME}-linux #main.go
-	GOARCH=amd64 GOOS=windows go build -o executables/${BINARY_NAME}-windows #main.go
-	mv executables/${BINARY_NAME}-darwin ${BINARY_NAME}
+	GOARCH=amd64 GOOS=darwin go build -o executables/${BINARY_NAME}.darwin
+	GOARCH=amd64 GOOS=linux go build -o executables/${BINARY_NAME}.linux
+	GOARCH=amd64 GOOS=windows go build -o executables/${BINARY_NAME}.exe
+	mv executables/${BINARY_NAME}.darwin ${BINARY_NAME}
 
 run: build
 	./${BINARY_NAME}
 
 clean:
 	go clean
-	rm executables/${BINARY_NAME}-darwin
-	rm executables/${BINARY_NAME}-linux
-	rm executables/${BINARY_NAME}-windows
+	rm executables/${BINARY_NAME}.darwin
+	rm executables/${BINARY_NAME}.linux
+	rm executables/${BINARY_NAME}.exe

@@ -26,7 +26,7 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nwidger/jsoncolor v0.3.1
-	github.com/oracle/oci-go-sdk/v65 v65.32.1
+	github.com/oracle/oci-go-sdk/v65 v65.33.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 	golang.org/x/crypto v0.7.0
@@ -34,7 +34,7 @@ require (
 
 require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/mattn/go-isatty v0.0.18 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 

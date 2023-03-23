@@ -24,7 +24,7 @@ go.work
 *.template
 *.pem
 *.fingerprint
-*.yaml
+adb-cli.yaml
 
 .DS_Store
 executables/
