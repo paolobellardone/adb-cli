@@ -23,10 +23,11 @@ env:
 
 steps:
   - type: Command
-    name: "Setup the build environment"
+    name: "Setup the environment variables"
     timeoutInSeconds: 120
     command: |
       export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
+      echo ${OCI_BUILD_RUN_ID}
       echo "BUILDRUN_HASH: " $BUILDRUN_HASH
 
   - type: Command
