@@ -1,8 +1,10 @@
 version: 0.1
 component: build
 timeoutInSeconds: 6000
-runAs: root
 shell: bash
+runAs: root
+failImmediatelyOnError: true
+
 env:
   # these are local variables to the build config
   variables:
@@ -17,11 +19,12 @@ env:
   # For this Build to run, the Build Pipeline needs to have a BUILDRUN_HASH parameter set
   exportedVariables:
     - BUILDRUN_HASH
+    - BUILD_RESULT
 
 steps:
   - type: Command
     name: "Setup the build environment"
-    timeoutInSeconds: 180
+    timeoutInSeconds: 120
     command: |
       export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
       echo "BUILDRUN_HASH: " $BUILDRUN_HASH
@@ -32,10 +35,33 @@ steps:
     command: |
       yum install -y oracle-golang-release-el7
       yum install -y golang
+    onFailure:
+      - type: Command
+        command: |
+          BUILD_RESULT=FAILURE
+          echo "Error during the setup of the build environment"
+        timeoutInSeconds: 400
 
   - type: Command
     name: "Build the source"
     timeoutInSeconds: 6000
     command: |
       cd ${OCI_PRIMARY_SOURCE_DIR}
-      make
+      make build
+    onFailure:
+      - type: Command
+        command: |
+          BUILD_RESULT=FAILURE
+          echo "Error during the build phase"
+        timeoutInSeconds: 400
+
+  - type: Command
+    name: "Package the artifacts"
+    timeoutInSeconds: 600
+    command: |
+      zip adb-cli-package.zip executables/*
+
+outputArtifacts:
+  - name: adb-cli-package
+    type: BINARY
+    location: ${OCI_PRIMARY_SOURCE_DIR}/adb-cli-package.zip
