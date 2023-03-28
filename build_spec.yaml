@@ -20,6 +20,7 @@ env:
   exportedVariables:
     - BUILDRUN_HASH
     - BUILD_RESULT
+    - ADB_CLI_VERSION
 
 steps:
   - type: Command
@@ -27,8 +28,9 @@ steps:
     timeoutInSeconds: 120
     command: |
       export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
-      echo ${OCI_BUILD_RUN_ID}
       echo "BUILDRUN_HASH: " $BUILDRUN_HASH
+      export ADB_CLI_VERSION=0.2.5
+      echo "ADB_CLI_VERSION: " $ADB_CLI_VERSION
 
   - type: Command
     name: "Setup the build environment"

@@ -38,7 +38,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const cliVersion string = "0.2.4"
+const cliVersion string = "0.2.5"
 
 type ociConfigT struct {
 	user               string
