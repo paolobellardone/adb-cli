@@ -34,7 +34,4 @@ run: build
 
 clean:
 	go clean
-	rm executables/${BINARY_NAME}.darwin
-	rm executables/${BINARY_NAME}.linux
-	rm executables/${BINARY_NAME}.exe
-	rmdir executables
+	rm -rf executables
