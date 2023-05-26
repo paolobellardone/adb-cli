@@ -42,7 +42,7 @@ import (
 
 // This is the template of the configuration file needed by the cli
 // Modify as needed in order to enrich the features of the cli
-var template string = `# Copyright © 2022 PaoloB <paolo.bellardone@gmail.com>
+var template string = `# Copyright © 2022 PaoloB
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -67,23 +67,6 @@ var template string = `# Copyright © 2022 PaoloB <paolo.bellardone@gmail.com>
 # This configuration file MUST have at least one profile named DEFAULT
 default:
 
-  # OCID of the user connecting to Oracle Cloud Infrastructure APIs. To get the value, see:
-  # https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#five
-  user: ocid1.user.oc1..<unique_ID>
-
-  # Full path and filename of the SSH private key (use *solely* forward slashes).
-  # /!\ Warning: The key pair must be in PEM format (2048 bits). For instructions on generating a key pair in PEM format, see:
-  # https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs
-  key_file: <full path to SSH private key file>
-
-  # Uncomment in the case your SSH private key needs a pass phrase.
-  # The adb-cli generated keys does not need it.
-  # pass_phrase: <pass phrase to use with your SSH private key>
-
-  # Fingerprint for the SSH *public* key that was added to the user mentioned above. To get the value, see:
-  # https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#four
-  fingerprint: <fingerprint associated with the corresponding SSH *public* key>
-
   # OCID of your tenancy. To get the value, see:
   # https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#five
   tenancy: ocid1.tenancy.oc1..<unique_ID>
@@ -96,12 +79,26 @@ default:
   # https://docs.cloud.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm?Highlight=compartment%20ocid#Managing_Compartments
   compartment_id: ocid1.compartment.oc1..<unique_ID>
 
+  # OCID of the user connecting to Oracle Cloud Infrastructure APIs. To get the value, see:
+  # https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#five
+  user: ocid1.user.oc1..<unique_ID>
+
+  # Full path and filename of the SSH private key (use *solely* forward slashes).
+  # /!\ Warning: The key pair must be in PEM format (2048 bits). For instructions on generating a key pair in PEM format, see:
+  # https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs
+  key_file: <full path to SSH private key file>
+
+  # Fingerprint for the SSH *public* key that was added to the user mentioned above. To get the value, see:
+  # https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#four
+  fingerprint: <fingerprint associated with the corresponding SSH *public* key>
+
+  # Uncomment in the case your SSH private key needs a pass phrase.
+  # The adb-cli generated keys does not need it.
+  # pass_phrase: <pass phrase to use with your SSH private key>
+
   # Authentication token that will be used for OCI Object Storage configuration, see:
   # https://docs.cloud.oracle.com/en-us/iaas/Content/Registry/Tasks/registrygettingauthtoken.htm?Highlight=user%20auth%20tokens
   auth_token: <authentication token>
-
-  # Uncomment to specify another database user name than adb (default)
-  # database_user_name: <your database user name>
 
   # The database password used for database creation and admin user
   # - 12 chars minimum and 30 chars maximum
