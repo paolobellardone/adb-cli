@@ -26,7 +26,7 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nwidger/jsoncolor v0.3.2
-	github.com/oracle/oci-go-sdk/v65 v65.41.1
+	github.com/oracle/oci-go-sdk/v65 v65.42.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	golang.org/x/crypto v0.10.0
