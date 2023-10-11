@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	//json "github.com/nwidger/jsoncolor"
@@ -48,7 +49,8 @@ var create_databaseCmd = &cobra.Command{
 
 		var adbName string
 		var databaseType string
-		var ocpus int
+		var computeModel string
+		var computeUnits int
 		var storage int
 		var enableOCPUAutoscaling bool
 		var enableStorageAutoscaling bool
@@ -74,11 +76,23 @@ var create_databaseCmd = &cobra.Command{
 		createADBDetails.DbWorkload = adbType.(database.CreateAutonomousDatabaseBaseDbWorkloadEnum)
 		createADBDetails.IsFreeTier = common.Bool(isFree)
 
-		ocpus, _ = cmd.Flags().GetInt("ocpus")
+		computeModel, _ = cmd.Flags().GetString("compute-model")
 		if !isFree {
-			createADBDetails.CpuCoreCount = common.Int(ocpus)
+			createADBDetails.ComputeModel = database.CreateAutonomousDatabaseBaseComputeModelEnum(strings.ToUpper(computeModel))
 		} else {
-			createADBDetails.CpuCoreCount = common.Int(1)
+			createADBDetails.ComputeModel = database.CreateAutonomousDatabaseBaseComputeModelEnum("ECPU")
+		}
+
+		computeUnits, _ = cmd.Flags().GetInt("compute-units")
+		if !isFree {
+			if strings.ToUpper(computeModel) == "ECPU" && (computeUnits%2) != 0 {
+				utils.PrintError("Error: when using ECPU compute model the number of compute units should be a multiple of 2")
+				return
+			} else {
+				createADBDetails.ComputeCount = common.Float32(float32(computeUnits))
+			}
+		} else {
+			createADBDetails.ComputeCount = common.Float32(1)
 		}
 
 		storage, _ = cmd.Flags().GetInt("storage")
@@ -101,7 +115,10 @@ var create_databaseCmd = &cobra.Command{
 		if !isFree {
 			_t1, _t2 := utils.DecodeLicenseModel(licenseModel, "create")
 			createADBDetails.LicenseModel = _t1.(database.CreateAutonomousDatabaseBaseLicenseModelEnum)
-			createADBDetails.DatabaseEdition = _t2.(database.AutonomousDatabaseSummaryDatabaseEditionEnum)
+			// The DatabaseEdition parameter is needed only if the LicenseModel is BYOL
+			if _t2 != nil {
+				createADBDetails.DatabaseEdition = _t2.(database.AutonomousDatabaseSummaryDatabaseEditionEnum)
+			}
 		}
 
 		if ociConfig.database_password == "" {
@@ -175,9 +192,9 @@ func init() {
 	create_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to create (required)")
 	create_databaseCmd.MarkFlagRequired("name")
 	create_databaseCmd.Flags().StringP("type", "t", "atpfree", "the type of the Autonomous Database to create - allowed values: atpfree, ajdfree, apexfree, adwfree, atp, ajd, apex, adw")
-	create_databaseCmd.Flags().IntP("ocpus", "o", 1, "the number of OCPUs to allocate for the Autonomous Database - not used for Free Tier")
-	create_databaseCmd.Flags().IntP("storage", "s", 1, "the size of storage in TB to allocate for the Autonomous Database - not used for Free Tier")
-	create_databaseCmd.Flags().Bool("enable-ocpu-autoscaling", false, "enable autoscaling for OCPUs (max 3x the number of allocated OCPUs)")
-	create_databaseCmd.Flags().Bool("enable-storage-autoscaling", false, "enable autoscaling for storage (max 3x the size of reserved storage)")
-	create_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byolee, byolse - not used for Free Tier")
+	create_databaseCmd.Flags().StringP("compute-model", "m", "ECPU", "the compute model to be used to create the Autonomous Database - allowed values: ECPU, OCPU -- not used for Free Tier")
+	create_databaseCmd.Flags().IntP("compute-units", "u", 2, "the number of compute units to allocate for the Autonomous Database -- not used for Free Tier")
+	create_databaseCmd.Flags().IntP("storage", "s", 1, "the size of storage in TB to allocate for the Autonomous Database -- not used for Free Tier")
+	create_databaseCmd.Flags().Bool("enable-storage-autoscaling", false, "enable autoscaling for storage (max 3x the size of reserved storage) -- not used for Free Tier")
+	create_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byolee, byolse -- not used for Free Tier")
 }

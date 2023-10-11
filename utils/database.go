@@ -143,7 +143,6 @@ func DecodeLicenseModel(license_model string, op string) (any, any) {
 	if op == "create" {
 		switch license_model {
 		case "full":
-			//return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded, nil
 			return database.CreateAutonomousDatabaseBaseLicenseModelLicenseIncluded, nil
 		case "byolee":
 			return database.CreateAutonomousDatabaseBaseLicenseModelBringYourOwnLicense, database.AutonomousDatabaseSummaryDatabaseEditionEnterpriseEdition
