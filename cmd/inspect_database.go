@@ -72,8 +72,9 @@ var inspect_databaseCmd = &cobra.Command{
 			utils.PrintKV("Display name                : ", *adbInstance.DisplayName)
 			utils.PrintKV("Database version            : ", *adbInstance.DbVersion)
 			utils.PrintKV("Preview version             : ", strconv.FormatBool(*adbInstance.IsPreview))
-			utils.PrintKV("OCPUs                       : ", strconv.Itoa(*adbInstance.CpuCoreCount))
-			utils.PrintKV("Storage (GB)                : ", strconv.Itoa(*adbInstance.DataStorageSizeInGBs))
+			utils.PrintKV(string(adbInstance.ComputeModel)+"s                       : ", strconv.FormatFloat(float64(*adbInstance.ComputeCount), 'f', -1, 32))
+			utils.PrintKV("Configured storage (GB)     : ", strconv.Itoa(*adbInstance.DataStorageSizeInGBs))
+			utils.PrintKV("Used storage (GB)           : ", strconv.FormatFloat(float64(*adbInstance.ActualUsedDataStorageSizeInTBs*1024), 'f', -1, 32))
 			utils.PrintKV("Workload type               : ", string(adbInstance.DbWorkload))
 			if *adbInstance.IsFreeTier {
 				utils.PrintKV("Free tier                   : ", strconv.FormatBool(*adbInstance.IsFreeTier))
