@@ -87,8 +87,7 @@ var inspect_databaseCmd = &cobra.Command{
 			// TODO: print only the details needed to create or update an ADB, add other details??? (Data Guard???)
 			utils.PrintInfo("Connections URLs")
 			utils.PrintKV("Database Actions            : ", *adbInstance.ConnectionUrls.SqlDevWebUrl)
-			// The following two are not needed anymore because all is available in Database Actions
-			//utils.PrintKV("Oracle Application Express  : ", *adbInstance.ConnectionUrls.ApexUrl)
+			utils.PrintKV("Oracle Application Express  : ", *adbInstance.ConnectionUrls.ApexUrl)
 			//utils.PrintKV("Oracle Graph Studio         : ", *adbInstance.ConnectionUrls.GraphStudioUrl)
 		}
 	},
