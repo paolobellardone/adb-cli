@@ -52,6 +52,7 @@ steps:
     name: "Build the source"
     timeoutInSeconds: 6000
     command: |
+      go version
       cd ${OCI_PRIMARY_SOURCE_DIR}
       make build
     onFailure:
