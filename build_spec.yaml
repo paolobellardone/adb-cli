@@ -37,8 +37,7 @@ steps:
     timeoutInSeconds: 6000
     command: |
       yum install -y oracle-golang-release-el7
-      yum
-      yum --enablerepo=ol7_developer_golang121 install -y golang
+      yum install -y golang
     onFailure:
       - type: Command
         command: |
