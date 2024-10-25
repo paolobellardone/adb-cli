@@ -22,7 +22,7 @@ module github.com/paolobellardone/adb-cli
 
 go 1.23
 
-toolchain go1.23.2
+//toolchain go1.23.2
 
 require (
 	github.com/fatih/color v1.18.0
