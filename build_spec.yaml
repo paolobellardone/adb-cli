@@ -36,8 +36,8 @@ steps:
     name: "Setup the build environment"
     timeoutInSeconds: 6000
     command: |
-      yum install -y ol7_developer_golang121
-      yum install -y golang
+      yum install -y oracle-golang-release-el7
+      yum install -y golang-1.21
     onFailure:
       - type: Command
         command: |
