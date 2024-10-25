@@ -38,7 +38,7 @@ steps:
     command: |
       yum install -y oracle-golang-release-el7
       yum
-      yum install --enablerepo ol7_developer_golang121 -y golang
+      yum --enablerepo ol7_developer_golang121 install -y golang
     onFailure:
       - type: Command
         command: |
