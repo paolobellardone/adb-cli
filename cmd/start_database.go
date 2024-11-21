@@ -43,6 +43,7 @@ var start_databaseCmd = &cobra.Command{
 		utils.PrintVerbose("")
 
 		var adbName, _ = cmd.Flags().GetString("name")
+		var noWait, _ = cmd.Flags().GetBool("no-wait")
 
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
 		if err != nil {
@@ -73,27 +74,31 @@ var start_databaseCmd = &cobra.Command{
 				return
 			}
 
-			utils.PrintInfo("Starting autonomous database " + adbName + ", please wait...")
+			if !noWait {
+				utils.PrintInfo("Starting autonomous database " + adbName + ", please wait...")
 
-			databaseStarting := true
-			databaseStatus := dbSADResponse.AutonomousDatabase.LifecycleState
+				databaseStarting := true
+				databaseStatus := dbSADResponse.AutonomousDatabase.LifecycleState
 
-			for databaseStarting {
-				adbInstance, err := utils.GetAutonomousDatabase(dbClient, adbOCID)
-				if err != nil {
-					utils.PrintError("Error: " + err.Error())
-					return
+				for databaseStarting {
+					adbInstance, err := utils.GetAutonomousDatabase(dbClient, adbOCID)
+					if err != nil {
+						utils.PrintError("Error: " + err.Error())
+						return
+					}
+
+					if adbInstance.LifecycleState == database.AutonomousDatabaseLifecycleStateAvailable {
+						databaseStarting = false
+						databaseStatus = adbInstance.LifecycleState
+					} else {
+						time.Sleep(15 * time.Second)
+					}
 				}
 
-				if adbInstance.LifecycleState == database.AutonomousDatabaseLifecycleStateAvailable {
-					databaseStarting = false
-					databaseStatus = adbInstance.LifecycleState
-				} else {
-					time.Sleep(15 * time.Second)
-				}
+				utils.PrintInfo("The Autonomous Database " + *dbSADResponse.AutonomousDatabase.DbName + " was started, the current status is: " + string(databaseStatus))
+			} else {
+				utils.PrintInfo("Starting autonomous database " + adbName + ", please check the status of the operation with command: adb-cli inspect database --name " + adbName)
 			}
-
-			utils.PrintInfo("The Autonomous Database " + *dbSADResponse.AutonomousDatabase.DbName + " was started, the current status is: " + string(databaseStatus))
 		} else {
 			utils.PrintWarning("The Autonomous Database " + adbName + " cannot be started because it is already running")
 		}
@@ -104,5 +109,6 @@ func init() {
 	startCmd.AddCommand(start_databaseCmd)
 
 	start_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to start (required)")
+	start_databaseCmd.Flags().Bool("no-wait", false, "do not wait for the operation to end")
 	start_databaseCmd.MarkFlagRequired("name")
 }

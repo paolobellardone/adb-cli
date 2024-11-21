@@ -43,6 +43,7 @@ var stop_databaseCmd = &cobra.Command{
 		utils.PrintVerbose("")
 
 		var adbName, _ = cmd.Flags().GetString("name")
+		var noWait, _ = cmd.Flags().GetBool("no-wait")
 
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))
 		if err != nil {
@@ -73,27 +74,31 @@ var stop_databaseCmd = &cobra.Command{
 				return
 			}
 
-			utils.PrintInfo("Stopping autonomous database " + adbName + ", please wait...")
+			if !noWait {
+				utils.PrintInfo("Stopping autonomous database " + adbName + ", please wait...")
 
-			databaseStopping := true
-			databaseStatus := dbSADResponse.AutonomousDatabase.LifecycleState
+				databaseStopping := true
+				databaseStatus := dbSADResponse.AutonomousDatabase.LifecycleState
 
-			for databaseStopping {
-				adbInstance, err := utils.GetAutonomousDatabase(dbClient, adbOCID)
-				if err != nil {
-					utils.PrintError("Error: " + err.Error())
-					return
+				for databaseStopping {
+					adbInstance, err := utils.GetAutonomousDatabase(dbClient, adbOCID)
+					if err != nil {
+						utils.PrintError("Error: " + err.Error())
+						return
+					}
+
+					if adbInstance.LifecycleState == database.AutonomousDatabaseLifecycleStateStopped {
+						databaseStopping = false
+						databaseStatus = adbInstance.LifecycleState
+					} else {
+						time.Sleep(15 * time.Second)
+					}
 				}
 
-				if adbInstance.LifecycleState == database.AutonomousDatabaseLifecycleStateStopped {
-					databaseStopping = false
-					databaseStatus = adbInstance.LifecycleState
-				} else {
-					time.Sleep(15 * time.Second)
-				}
+				utils.PrintInfo("The Autonomous Database " + *dbSADResponse.AutonomousDatabase.DbName + " was stopped, the current status is: " + string(databaseStatus))
+			} else {
+				utils.PrintInfo("Stopping autonomous database " + adbName + ", please check the status of the operation with command: adb-cli inspect database --name " + adbName)
 			}
-
-			utils.PrintInfo("The Autonomous Database " + *dbSADResponse.AutonomousDatabase.DbName + " was stopped, the current status is: " + string(databaseStatus))
 		} else {
 			utils.PrintWarning("The Autonomous Database " + adbName + " cannot be stopped because it is already stopped")
 		}
@@ -104,5 +109,6 @@ func init() {
 	stopCmd.AddCommand(stop_databaseCmd)
 
 	stop_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to stop (required)")
+	stop_databaseCmd.Flags().Bool("no-wait", false, "do not wait for the operation to end")
 	stop_databaseCmd.MarkFlagRequired("name")
 }

@@ -15,6 +15,7 @@ adb-cli stop database [flags]
 ```
   -h, --help          help for database
   -n, --name string   the name of the Autonomous Database to stop (required)
+      --no-wait       do not wait for the operation to end
 ```
 
 ### Options inherited from parent commands
