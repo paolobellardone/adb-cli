@@ -25,6 +25,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"os"
+	"os/user"
 
 	"encoding/hex"
 
@@ -106,4 +108,18 @@ func Decrypt(encryptedString string) (decryptedString string) {
 
 	//return fmt.Sprintf("%s", plaintext)
 	return string(plaintext)
+}
+
+// Get the user's home folder
+func GetHomeFolder() string {
+	current, e := user.Current()
+	if e != nil {
+		// If the user.Current() method does not work, it reads the user's home folder from the enviroment
+		home := os.Getenv("HOME") // Linux/MacOS
+		if home == "" {
+			home = os.Getenv("USERPROFILE") // Windows
+		}
+		return home
+	}
+	return current.HomeDir
 }

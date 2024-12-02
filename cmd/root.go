@@ -38,7 +38,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const cliVersion string = "0.4.2"
+const cliVersion string = "0.4.3"
 
 type ociConfigT struct {
 	user               string
@@ -129,12 +129,15 @@ func initConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag...
 		viper.SetConfigType("yaml")
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// ...or use the default one named adb-cli.yaml in the current directory.
+		viper.SetConfigName(cfgFile)
 		viper.AddConfigPath("./")
+		viper.AddConfigPath(utils.GetHomeFolder() + "/")
+	} else {
+		// ...or use the default one named adb-cli.yaml in the current directory or in the home directory
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("adb-cli")
+		viper.AddConfigPath("./")
+		viper.AddConfigPath(utils.GetHomeFolder() + "/")
 	}
 
 	if cfgFileProfile == "" {
