@@ -29,15 +29,15 @@ steps:
     command: |
       export BUILDRUN_HASH=`echo ${OCI_BUILD_RUN_ID} | rev | cut -c 1-7`
       echo "BUILDRUN_HASH: " $BUILDRUN_HASH
-      export ADB_CLI_VERSION=0.4.3
+      export ADB_CLI_VERSION=0.4.4
       echo "ADB_CLI_VERSION: " $ADB_CLI_VERSION
 
   - type: Command
     name: "Setup the build environment"
     timeoutInSeconds: 6000
     command: |
-       wget https://go.dev/dl/go1.23.2.linux-amd64.tar.gz
-       rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.2.linux-amd64.tar.gz
+       wget https://go.dev/dl/go1.24.1.linux-amd64.tar.gz
+       rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.1.linux-amd64.tar.gz
        export PATH=/usr/local/go/bin:$PATH
 #      yum install -y oracle-golang-release-el7
 #      yum install -y golang

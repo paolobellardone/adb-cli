@@ -56,7 +56,7 @@ Please see the full documentation [here](docs/adb-cli.md)
 
 ## License
 
-Copyright © 2022, 2024 PaoloB
+Copyright © 2022, 2025 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

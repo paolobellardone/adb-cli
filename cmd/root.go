@@ -1,5 +1,5 @@
 /*
-Copyright © 2022, 2024 PaoloB
+Copyright © 2022, 2025 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const cliVersion string = "0.4.3"
+const cliVersion string = "0.4.4"
 
 type ociConfigT struct {
 	user               string
