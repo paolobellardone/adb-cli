@@ -52,7 +52,7 @@ var create_databaseCmd = &cobra.Command{
 		var computeModel string
 		var computeUnits int
 		var storage int
-		var enableOCPUAutoscaling bool
+		var enableComputeAutoscaling bool
 		var enableStorageAutoscaling bool
 		var licenseModel string
 		var createADBDetails database.CreateAutonomousDatabaseDetails
@@ -67,6 +67,7 @@ var create_databaseCmd = &cobra.Command{
 		if len(adbName) > 14 {
 			// If the name of the Autonomous Database is longer than 14 chars then truncate it
 			adbName = adbName[:14]
+			utils.PrintWarning("The Autonomous Database name is longer that 14 characters so it was truncated. The new name is: " + adbName)
 		}
 		createADBDetails.DbName = common.String(adbName)
 		createADBDetails.DisplayName = common.String(adbName)
@@ -76,12 +77,9 @@ var create_databaseCmd = &cobra.Command{
 		createADBDetails.DbWorkload = adbType.(database.CreateAutonomousDatabaseBaseDbWorkloadEnum)
 		createADBDetails.IsFreeTier = common.Bool(isFree)
 
-		computeModel, _ = cmd.Flags().GetString("compute-model")
-		if !isFree {
-			createADBDetails.ComputeModel = database.CreateAutonomousDatabaseBaseComputeModelEnum(strings.ToUpper(computeModel))
-		} else {
-			createADBDetails.ComputeModel = database.CreateAutonomousDatabaseBaseComputeModelEnum("ECPU")
-		}
+		// The compute model is now ECPU by default because OCPU model is deprecated and will be removed from the APIs on May 28th, 2025
+		computeModel = "ECPU"
+		createADBDetails.ComputeModel = database.CreateAutonomousDatabaseBaseComputeModelEnum(strings.ToUpper(computeModel))
 
 		computeUnits, _ = cmd.Flags().GetInt("compute-units")
 		if !isFree {
@@ -92,19 +90,32 @@ var create_databaseCmd = &cobra.Command{
 				createADBDetails.ComputeCount = common.Float32(float32(computeUnits))
 			}
 		} else {
-			createADBDetails.ComputeCount = common.Float32(1)
+			createADBDetails.ComputeCount = common.Float32(2)
 		}
 
 		storage, _ = cmd.Flags().GetInt("storage")
 		if !isFree {
-			createADBDetails.DataStorageSizeInTBs = common.Int(storage)
+			//createADBDetails.DataStorageSizeInTBs = common.Int(storage)
+			createADBDetails.DataStorageSizeInGBs = common.Int(storage)
+			if databaseType == "adw" && storage < 1024 {
+				createADBDetails.DataStorageSizeInGBs = common.Int(1024)
+				utils.PrintWarning("Warning: the given size for Autonomous Database is lower than minimum. Size adjusted to 1024 GB.")
+			} else if (databaseType == "atp" || databaseType == "ajd" || databaseType == "apex") && storage <= 20 {
+				createADBDetails.DataStorageSizeInGBs = common.Int(20)
+				utils.PrintWarning("Warning: the given size for Autonomous Database is lower than minimum. Size adjusted to 20 GB.")
+			}
 		} else {
-			createADBDetails.DataStorageSizeInTBs = common.Int(1)
+			//createADBDetails.DataStorageSizeInTBs = common.Int(1)
+			if databaseType == "atpfree" || databaseType == "ajdfree" || databaseType == "apexfree" {
+				createADBDetails.DataStorageSizeInGBs = common.Int(20)
+			} else if databaseType == "adwfree" {
+				createADBDetails.DataStorageSizeInGBs = common.Int(1024)
+			}
 		}
 
-		enableOCPUAutoscaling, _ = cmd.Flags().GetBool("enable-ocpu-autoscaling")
+		enableComputeAutoscaling, _ = cmd.Flags().GetBool("enable-compute-autoscaling")
 		if !isFree {
-			createADBDetails.IsAutoScalingEnabled = common.Bool(enableOCPUAutoscaling)
+			createADBDetails.IsAutoScalingEnabled = common.Bool(enableComputeAutoscaling)
 		}
 		enableStorageAutoscaling, _ = cmd.Flags().GetBool("enable-storage-autoscaling")
 		if !isFree {
@@ -191,10 +202,10 @@ func init() {
 
 	create_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to create (required)")
 	create_databaseCmd.MarkFlagRequired("name")
-	create_databaseCmd.Flags().StringP("type", "t", "atpfree", "the type of the Autonomous Database to create - allowed values: atpfree, ajdfree, apexfree, adwfree, atp, ajd, apex, adw")
-	create_databaseCmd.Flags().StringP("compute-model", "m", "ECPU", "the compute model to be used to create the Autonomous Database - allowed values: ECPU, OCPU -- not used for Free Tier")
+	create_databaseCmd.Flags().StringP("type", "t", "atpfree", "the type of the Autonomous Database to create -- allowed values: atpfree, ajdfree, apexfree, adwfree, atp, ajd, apex, adw")
 	create_databaseCmd.Flags().IntP("compute-units", "u", 2, "the number of compute units to allocate for the Autonomous Database -- not used for Free Tier")
-	create_databaseCmd.Flags().IntP("storage", "s", 1, "the size of storage in TB to allocate for the Autonomous Database -- not used for Free Tier")
+	create_databaseCmd.Flags().IntP("storage", "s", 20, "the size of storage in GB to allocate for the Autonomous Database (20 GB minimum for ATP, 1024 GB minimum for ADW) -- not used for Free Tier")
+	create_databaseCmd.Flags().Bool("enable-compute-autoscaling", false, "enable autoscaling for compute (max 3x the size of baseline compute units) -- not used for Free Tier")
 	create_databaseCmd.Flags().Bool("enable-storage-autoscaling", false, "enable autoscaling for storage (max 3x the size of reserved storage) -- not used for Free Tier")
 	create_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byolee, byolse -- not used for Free Tier")
 }

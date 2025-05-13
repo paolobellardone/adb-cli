@@ -48,7 +48,7 @@ var update_databaseCmd = &cobra.Command{
 		var databaseType string
 		var ocpus int
 		var storage int
-		var enableOCPUAutoscaling bool
+		var enableComputeAutoscaling bool
 		var enableStorageAutoscaling bool
 		//var disableOCPUAutoscaling bool
 		//var disableStorageAutoscaling bool
@@ -56,7 +56,6 @@ var update_databaseCmd = &cobra.Command{
 
 		// Semplificare cosa si può modificare, sicuramente non il tipo (adw/atp ecc) mettere solo le configurazioni di base cpu/storage ecc
 		// E' possibile solo fare una operazione per volta!!! modificare
-		// per cambiare la licenza a byol è necessario specificare il tipo di licenza, anche per create!!! (Standard o Enterprise)
 		var updateADBDetails database.UpdateAutonomousDatabaseDetails
 		var adbType interface{}
 		var isFree bool
@@ -65,6 +64,7 @@ var update_databaseCmd = &cobra.Command{
 		if len(adbName) > 14 {
 			// If the name of the Autonomous Database is longer than 14 chars then truncate it
 			adbName = adbName[:14]
+			utils.PrintWarning("The Autonomous Database name is longer that 14 characters so it was truncated. The new name is: " + adbName)
 		}
 
 		if cmd.Flags().Changed("type") {
@@ -73,23 +73,23 @@ var update_databaseCmd = &cobra.Command{
 			updateADBDetails.DbWorkload = adbType.(database.UpdateAutonomousDatabaseDetailsDbWorkloadEnum)
 			updateADBDetails.IsFreeTier = common.Bool(isFree)
 		}
-		if cmd.Flags().Changed("ocpus") {
-			ocpus, _ = cmd.Flags().GetInt("ocpus")
+		if cmd.Flags().Changed("compute-units") {
+			ocpus, _ = cmd.Flags().GetInt("compute-units")
 			updateADBDetails.CpuCoreCount = common.Int(ocpus)
 		}
 		if cmd.Flags().Changed("storage") {
 			storage, _ = cmd.Flags().GetInt("storage")
-			updateADBDetails.DataStorageSizeInTBs = common.Int(storage)
+			updateADBDetails.DataStorageSizeInGBs = common.Int(storage)
 		}
-		if cmd.Flags().Changed("enable-ocpu-autoscaling") {
-			enableOCPUAutoscaling, _ = cmd.Flags().GetBool("enable-ocpu-autoscaling")
-			updateADBDetails.IsAutoScalingEnabled = common.Bool(enableOCPUAutoscaling)
+		if cmd.Flags().Changed("enable-compute-autoscaling") {
+			enableComputeAutoscaling, _ = cmd.Flags().GetBool("enable-compute-autoscaling")
+			updateADBDetails.IsAutoScalingEnabled = common.Bool(enableComputeAutoscaling)
 		}
 		if cmd.Flags().Changed("enable-storage-autoscaling") {
 			enableStorageAutoscaling, _ = cmd.Flags().GetBool("enable-storage-autoscaling")
 			updateADBDetails.IsAutoScalingEnabled = common.Bool(enableStorageAutoscaling)
 		}
-		if cmd.Flags().Changed("disable-ocpu-autoscaling") {
+		if cmd.Flags().Changed("disable-compute-autoscaling") {
 			updateADBDetails.IsAutoScalingEnabled = common.Bool(false)
 		}
 		if cmd.Flags().Changed("disable-storage-autoscaling") {
@@ -167,11 +167,11 @@ func init() {
 	update_databaseCmd.Flags().StringP("name", "n", "", "the name of the Autonomous Database to update (required)")
 	update_databaseCmd.MarkFlagRequired("name")
 	update_databaseCmd.Flags().StringP("type", "t", "atpfree", "the type of the Autonomous Database to update - allowed values: atpfree, ajdfree, apexfree, adwfree, atp, ajd, apex, adw")
-	update_databaseCmd.Flags().IntP("ocpus", "o", 1, "the number of OCPUs to allocate for the Autonomous Database - not used for Free Tier")
-	update_databaseCmd.Flags().IntP("storage", "s", 1, "the size of storage in TB to allocate for the Autonomous Database - not used for Free Tier")
-	update_databaseCmd.Flags().Bool("enable-ocpu-autoscaling", false, "enable autoscaling for OCPUs (max 3x the number of allocated OCPUs)")
+	update_databaseCmd.Flags().IntP("compute-units", "u", 2, "the number of compute units to allocate for the Autonomous Database - not used for Free Tier")
+	update_databaseCmd.Flags().IntP("storage", "s", 20, "the size of storage in GB to allocate for the Autonomous Database - not used for Free Tier")
+	update_databaseCmd.Flags().Bool("enable-compute-autoscaling", false, "enable autoscaling for compute units (max 3x the number of baseline compute units)")
 	update_databaseCmd.Flags().Bool("enable-storage-autoscaling", false, "enable autoscaling for storage (max 3x the size of reserved storage)")
-	update_databaseCmd.Flags().Bool("disable-ocpu-autoscaling", false, "disable autoscaling for OCPUs")
+	update_databaseCmd.Flags().Bool("disable-compute-autoscaling", false, "disable autoscaling for compute units")
 	update_databaseCmd.Flags().Bool("disable-storage-autoscaling", false, "disable autoscaling for storage")
 	update_databaseCmd.Flags().StringP("license-model", "l", "full", "the licensing model to use - allowed values: full, byolee, byolse - not used for Free Tier")
 }
