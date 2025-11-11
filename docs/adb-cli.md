@@ -24,6 +24,7 @@ adb-cli is a lightweight cli to manage Autonomous Databases in your OCI tenancy
 * [adb-cli create](adb-cli_create.md)	 - Create an OCI resource and/or supporting configuration - allowed resources: config, database, wallet
 * [adb-cli delete](adb-cli_delete.md)	 - Delete an OCI resource and/or supporting configuration - allowed resources: config, database, wallet
 * [adb-cli inspect](adb-cli_inspect.md)	 - Inspect an OCI resource and/or supporting configuration - allowed resources: config, database
+* [adb-cli restart](adb-cli_restart.md)	 - Restart an OCI resource - allowed resources: database
 * [adb-cli start](adb-cli_start.md)	 - Start an OCI resource - allowed resources: database
 * [adb-cli stop](adb-cli_stop.md)	 - Stop an OCI resource - allowed resources: database
 * [adb-cli update](adb-cli_update.md)	 - Update an OCI resource - allowed resources: database

@@ -36,6 +36,7 @@ where
   * _inspect_
   * _create_
   * _delete_
+  * _restart_
 * [resource] is:
   * _database_
   * _config_
