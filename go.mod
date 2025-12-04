@@ -26,10 +26,10 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nwidger/jsoncolor v0.3.2
-	github.com/oracle/oci-go-sdk/v65 v65.104.1
-	github.com/spf13/cobra v1.10.1
+	github.com/oracle/oci-go-sdk/v65 v65.105.0
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
-	golang.org/x/crypto v0.43.0
+	golang.org/x/crypto v0.45.0
 )
 
 require (
@@ -54,6 +54,5 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	golang.org/x/text v0.31.0 // indirect
 )
