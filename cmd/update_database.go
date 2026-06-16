@@ -1,5 +1,5 @@
 /*
-Copyright © 2022, 2025 PaoloB
+Copyright © 2022, 2026 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -70,6 +70,10 @@ var update_databaseCmd = &cobra.Command{
 		if cmd.Flags().Changed("type") {
 			databaseType, _ = cmd.Flags().GetString("type")
 			adbType, isFree = utils.DecodeADBType(databaseType, "update")
+			if adbType == nil {
+				utils.PrintError("Error: Invalid database type " + databaseType)
+				return
+			}
 			updateADBDetails.DbWorkload = adbType.(database.UpdateAutonomousDatabaseDetailsDbWorkloadEnum)
 			updateADBDetails.IsFreeTier = common.Bool(isFree)
 		}
@@ -87,19 +91,25 @@ var update_databaseCmd = &cobra.Command{
 		}
 		if cmd.Flags().Changed("enable-storage-autoscaling") {
 			enableStorageAutoscaling, _ = cmd.Flags().GetBool("enable-storage-autoscaling")
-			updateADBDetails.IsAutoScalingEnabled = common.Bool(enableStorageAutoscaling)
+			updateADBDetails.IsAutoScalingForStorageEnabled = common.Bool(enableStorageAutoscaling)
 		}
 		if cmd.Flags().Changed("disable-compute-autoscaling") {
 			updateADBDetails.IsAutoScalingEnabled = common.Bool(false)
 		}
 		if cmd.Flags().Changed("disable-storage-autoscaling") {
-			updateADBDetails.IsAutoScalingEnabled = common.Bool(false)
+			updateADBDetails.IsAutoScalingForStorageEnabled = common.Bool(false)
 		}
 		if cmd.Flags().Changed("license-model") {
 			licenseModel, _ = cmd.Flags().GetString("license-model")
-			var _t1, _t2 = utils.DecodeLicenseModel(licenseModel, "update")
-			updateADBDetails.LicenseModel = _t1.(database.UpdateAutonomousDatabaseDetailsLicenseModelEnum)
-			updateADBDetails.DatabaseEdition = _t2.(database.AutonomousDatabaseSummaryDatabaseEditionEnum)
+			var t1, t2 = utils.DecodeLicenseModel(licenseModel, "update")
+			if t1 == nil {
+				utils.PrintError("Error: Invalid license model " + licenseModel)
+				return
+			}
+			updateADBDetails.LicenseModel = t1.(database.UpdateAutonomousDatabaseDetailsLicenseModelEnum)
+			if t2 != nil {
+				updateADBDetails.DatabaseEdition = t2.(database.AutonomousDatabaseSummaryDatabaseEditionEnum)
+			}
 		}
 
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(common.NewRawConfigurationProvider(ociConfig.tenancy, ociConfig.user, ociConfig.region, ociConfig.fingerprint, ociConfig.key_file, &ociConfig.pass_phrase))

@@ -1,5 +1,5 @@
 /*
-Copyright © 2022, 2025 PaoloB
+Copyright © 2022, 2026 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ import (
 
 // This is the template of the configuration file needed by the cli
 // Modify as needed in order to enrich the features of the cli
-var template string = `# Copyright © 2022 PaoloB
+var template string = `# Copyright © 2022, 2026 PaoloB
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -73,7 +73,7 @@ default:
 
   # An Oracle Cloud Infrastructure region identifier. For a list of possible region identifiers, see:
   # https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm#top
-  region=: eu-frankfurt-1
+  region: eu-frankfurt-1
 
   # OCID of the compartment to use for resources creation. To get more information about compartments, see:
   # https://docs.cloud.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm?Highlight=compartment%20ocid#Managing_Compartments
@@ -116,7 +116,7 @@ default:
 
   # A list of comma separated table name(s) that you wish to get right after database creation
   # These table must have corresponding CSV file(s) so that table structure (DDL) is deduced from the files
-  # database_tables=:
+  # database_tables:
 `
 
 // create_configCmd creates the configuration template file for this cli

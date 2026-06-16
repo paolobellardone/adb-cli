@@ -1,5 +1,5 @@
 /*
-Copyright © 2022, 2025 PaoloB
+Copyright © 2022, 2026 PaoloB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,6 +72,7 @@ var delete_databaseCmd = &cobra.Command{
 			scanner.Scan()
 			if scanner.Text() != "Y" {
 				utils.PrintError("The termination of the Autonomous Database " + adbName + " was ABORTED by the user!")
+				return
 			} else {
 				// Send the request using the service client
 				_, err := dbClient.DeleteAutonomousDatabase(context.Background(), database.DeleteAutonomousDatabaseRequest{AutonomousDatabaseId: common.String(adbOCID)})
@@ -106,20 +107,21 @@ var delete_databaseCmd = &cobra.Command{
 					}
 				}
 				utils.PrintInfo("The Autonomous Database " + *adbInstance.DbName + " was terminated, the current status is: " + string(databaseStatus))
+
+				// Delete the Autonomous Database wallet for the specified database (it should be there if it was created by adb-cli)
+				err = utils.DeleteAutonmousDatabaseWallet(adbName)
+				if err != nil {
+					utils.PrintError("Error: " + err.Error())
+					return
+				} else {
+					utils.PrintInfo("The wallet for Autonomous Database " + adbName + " was successfully deleted.")
+				}
 			}
 		} else {
 			utils.PrintError("Error: The specified Autonomous Database name does not match")
 			return
 		}
 
-		// Delete the Autonomous Database wallet for the specified database (it should be there if it was created by adb-cli)
-		err = utils.DeleteAutonmousDatabaseWallet(adbName)
-		if err != nil {
-			utils.PrintError("Error: " + err.Error())
-			return
-		} else {
-			utils.PrintInfo("The wallet for Autonomous Database " + adbName + " was successfully deleted.")
-		}
 	},
 }
 
